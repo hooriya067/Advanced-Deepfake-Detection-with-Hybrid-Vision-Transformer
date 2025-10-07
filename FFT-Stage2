@@ -3,21 +3,21 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "51396c24",
+   "id": "a9b160bd",
    "metadata": {
     "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
     "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
     "execution": {
-     "iopub.execute_input": "2025-10-06T15:05:32.977526Z",
-     "iopub.status.busy": "2025-10-06T15:05:32.977234Z",
-     "iopub.status.idle": "2025-10-06T15:06:54.008073Z",
-     "shell.execute_reply": "2025-10-06T15:06:54.007339Z"
+     "iopub.execute_input": "2025-10-07T07:04:05.204866Z",
+     "iopub.status.busy": "2025-10-07T07:04:05.204591Z",
+     "iopub.status.idle": "2025-10-07T07:05:18.248912Z",
+     "shell.execute_reply": "2025-10-07T07:05:18.247699Z"
     },
     "papermill": {
-     "duration": 81.035788,
-     "end_time": "2025-10-06T15:06:54.009547",
+     "duration": 73.050124,
+     "end_time": "2025-10-07T07:05:18.251213",
      "exception": false,
-     "start_time": "2025-10-06T15:05:32.973759",
+     "start_time": "2025-10-07T07:04:05.201089",
      "status": "completed"
     },
     "tags": []
@@ -27,16 +27,16 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m363.4/363.4 MB\u001b[0m \u001b[31m4.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m13.8/13.8 MB\u001b[0m \u001b[31m88.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m24.6/24.6 MB\u001b[0m \u001b[31m74.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m883.7/883.7 kB\u001b[0m \u001b[31m42.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m664.8/664.8 MB\u001b[0m \u001b[31m2.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m211.5/211.5 MB\u001b[0m \u001b[31m7.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.3/56.3 MB\u001b[0m \u001b[31m22.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m127.9/127.9 MB\u001b[0m \u001b[31m11.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m207.5/207.5 MB\u001b[0m \u001b[31m6.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m21.1/21.1 MB\u001b[0m \u001b[31m2.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m363.4/363.4 MB\u001b[0m \u001b[31m4.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m13.8/13.8 MB\u001b[0m \u001b[31m95.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m24.6/24.6 MB\u001b[0m \u001b[31m75.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m883.7/883.7 kB\u001b[0m \u001b[31m45.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m664.8/664.8 MB\u001b[0m \u001b[31m2.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m211.5/211.5 MB\u001b[0m \u001b[31m3.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.3/56.3 MB\u001b[0m \u001b[31m3.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m127.9/127.9 MB\u001b[0m \u001b[31m13.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m207.5/207.5 MB\u001b[0m \u001b[31m8.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m21.1/21.1 MB\u001b[0m \u001b[31m86.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
       "\u001b[?25h"
      ]
     }
@@ -48,19 +48,19 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "16d85f1a",
+   "id": "00192577",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-10-06T15:06:54.070584Z",
-     "iopub.status.busy": "2025-10-06T15:06:54.070267Z",
-     "iopub.status.idle": "2025-10-06T15:06:54.078201Z",
-     "shell.execute_reply": "2025-10-06T15:06:54.077518Z"
+     "iopub.execute_input": "2025-10-07T07:05:18.313839Z",
+     "iopub.status.busy": "2025-10-07T07:05:18.313561Z",
+     "iopub.status.idle": "2025-10-07T07:05:18.321627Z",
+     "shell.execute_reply": "2025-10-07T07:05:18.320819Z"
     },
     "papermill": {
-     "duration": 0.039995,
-     "end_time": "2025-10-06T15:06:54.079326",
+     "duration": 0.039078,
+     "end_time": "2025-10-07T07:05:18.322859",
      "exception": false,
-     "start_time": "2025-10-06T15:06:54.039331",
+     "start_time": "2025-10-07T07:05:18.283781",
      "status": "completed"
     },
     "tags": []
@@ -241,19 +241,19 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "2fb8c50a",
+   "id": "066217b6",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-10-06T15:06:54.135662Z",
-     "iopub.status.busy": "2025-10-06T15:06:54.135408Z",
-     "iopub.status.idle": "2025-10-06T15:06:54.142439Z",
-     "shell.execute_reply": "2025-10-06T15:06:54.141584Z"
+     "iopub.execute_input": "2025-10-07T07:05:18.364572Z",
+     "iopub.status.busy": "2025-10-07T07:05:18.364303Z",
+     "iopub.status.idle": "2025-10-07T07:05:18.371367Z",
+     "shell.execute_reply": "2025-10-07T07:05:18.370559Z"
     },
     "papermill": {
-     "duration": 0.037033,
-     "end_time": "2025-10-06T15:06:54.143692",
+     "duration": 0.029493,
+     "end_time": "2025-10-07T07:05:18.372498",
      "exception": false,
-     "start_time": "2025-10-06T15:06:54.106659",
+     "start_time": "2025-10-07T07:05:18.343005",
      "status": "completed"
     },
     "tags": []
@@ -417,19 +417,19 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "c19c9a2e",
+   "id": "154a6759",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-10-06T15:06:54.200195Z",
-     "iopub.status.busy": "2025-10-06T15:06:54.199756Z",
-     "iopub.status.idle": "2025-10-06T15:06:54.352770Z",
-     "shell.execute_reply": "2025-10-06T15:06:54.352023Z"
+     "iopub.execute_input": "2025-10-07T07:05:18.414719Z",
+     "iopub.status.busy": "2025-10-07T07:05:18.414452Z",
+     "iopub.status.idle": "2025-10-07T07:05:18.566228Z",
+     "shell.execute_reply": "2025-10-07T07:05:18.565447Z"
     },
     "papermill": {
-     "duration": 0.182768,
-     "end_time": "2025-10-06T15:06:54.354194",
+     "duration": 0.174711,
+     "end_time": "2025-10-07T07:05:18.567633",
      "exception": false,
-     "start_time": "2025-10-06T15:06:54.171426",
+     "start_time": "2025-10-07T07:05:18.392922",
      "status": "completed"
     },
     "tags": []
@@ -459,19 +459,19 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "a940aaee",
+   "id": "ee65bfc7",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-10-06T15:06:54.412059Z",
-     "iopub.status.busy": "2025-10-06T15:06:54.411516Z",
-     "iopub.status.idle": "2025-10-06T20:25:49.642307Z",
-     "shell.execute_reply": "2025-10-06T20:25:49.641449Z"
+     "iopub.execute_input": "2025-10-07T07:05:18.610342Z",
+     "iopub.status.busy": "2025-10-07T07:05:18.609777Z",
+     "iopub.status.idle": "2025-10-07T12:36:51.214150Z",
+     "shell.execute_reply": "2025-10-07T12:36:51.213152Z"
     },
     "papermill": {
-     "duration": 19135.26155,
-     "end_time": "2025-10-06T20:25:49.643981",
+     "duration": 19892.627469,
+     "end_time": "2025-10-07T12:36:51.215787",
      "exception": false,
-     "start_time": "2025-10-06T15:06:54.382431",
+     "start_time": "2025-10-07T07:05:18.588318",
      "status": "completed"
     },
     "tags": []
@@ -483,17 +483,17 @@
      "text": [
       "Loading ImageNet weights into ResNet…\r\n",
       "Downloading: \"https://download.pytorch.org/models/resnet50-0676ba61.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-0676ba61.pth\r\n",
-      "100%|███████████████████████████████████████| 97.8M/97.8M [00:00<00:00, 233MB/s]\r\n",
+      "100%|███████████████████████████████████████| 97.8M/97.8M [00:00<00:00, 185MB/s]\r\n",
       "✓ Loaded.\r\n",
       "/usr/local/lib/python3.11/dist-packages/torch/nn/modules/transformer.py:508: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. We recommend specifying layout=torch.jagged when constructing a nested tensor, as this layout receives active development, has better operator coverage, and works with torch.compile. (Triggered internally at /pytorch/aten/src/ATen/NestedTensorImpl.cpp:178.)\r\n",
       "  output = torch._nested_tensor_from_mask(\r\n",
-      "Epoch 01 | train 0.3847/0.8293 | valid 2.6145/0.5003\r\n",
+      "Epoch 01 | train 0.3670/0.8384 | valid 0.2566/0.8952\r\n",
       "  ↳ Saved best to /kaggle/working/p3_stage2_cmf.pth\r\n",
-      "Epoch 02 | train 0.3419/0.8502 | valid 1.7231/0.5103\r\n",
+      "Epoch 02 | train 0.3185/0.8633 | valid 0.2348/0.9053\r\n",
       "  ↳ Saved best to /kaggle/working/p3_stage2_cmf.pth\r\n",
-      "Epoch 03 | train 0.3091/0.8693 | valid 0.3951/0.8248\r\n",
+      "Epoch 03 | train 0.2787/0.8822 | valid 0.2293/0.9075\r\n",
       "  ↳ Saved best to /kaggle/working/p3_stage2_cmf.pth\r\n",
-      "Test: loss 0.3969 acc 0.8266\r\n"
+      "Test: loss 0.2428 acc 0.8993\r\n"
      ]
     }
    ],
@@ -511,19 +511,19 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "6d4dde18",
+   "id": "70a084f0",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2025-10-06T20:25:49.703249Z",
-     "iopub.status.busy": "2025-10-06T20:25:49.702983Z",
-     "iopub.status.idle": "2025-10-06T20:43:18.317362Z",
-     "shell.execute_reply": "2025-10-06T20:43:18.316347Z"
+     "iopub.execute_input": "2025-10-07T12:36:51.258815Z",
+     "iopub.status.busy": "2025-10-07T12:36:51.258559Z",
+     "iopub.status.idle": "2025-10-07T12:57:05.807180Z",
+     "shell.execute_reply": "2025-10-07T12:57:05.806408Z"
     },
     "papermill": {
-     "duration": 1048.64543,
-     "end_time": "2025-10-06T20:43:18.318985",
+     "duration": 1214.572334,
+     "end_time": "2025-10-07T12:57:05.808925",
      "exception": false,
-     "start_time": "2025-10-06T20:25:49.673555",
+     "start_time": "2025-10-07T12:36:51.236591",
      "status": "completed"
     },
     "tags": []
@@ -537,12 +537,12 @@
       "Loaded 370 tensors; skipped 0 (shape mismatch).\r\n",
       "/usr/local/lib/python3.11/dist-packages/torch/nn/modules/transformer.py:508: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. We recommend specifying layout=torch.jagged when constructing a nested tensor, as this layout receives active development, has better operator coverage, and works with torch.compile. (Triggered internally at /pytorch/aten/src/ATen/NestedTensorImpl.cpp:178.)\r\n",
       "  output = torch._nested_tensor_from_mask(\r\n",
-      "Test: loss 0.3969 acc 0.8266\r\n"
+      "Test: loss 0.2428 acc 0.8993\r\n"
      ]
     }
    ],
    "source": [
-    "!python run_stage2.py \\\n",
+    "!python -u run_stage2.py \\\n",
     "  --data_root $DATA_ROOT \\\n",
     "  --epochs 0 \\\n",
     "  --n_segments 50 \\\n",
@@ -586,14 +586,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 20269.771075,
-   "end_time": "2025-10-06T20:43:18.685381",
+   "duration": 21185.155565,
+   "end_time": "2025-10-07T12:57:06.167930",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2025-10-06T15:05:28.914306",
+   "start_time": "2025-10-07T07:04:01.012365",
    "version": "2.6.0"
   }
  },
