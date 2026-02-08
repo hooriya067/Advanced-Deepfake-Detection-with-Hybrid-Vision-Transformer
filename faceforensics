@@ -1,0 +1,1044 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "160b768d",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2026-02-08T07:56:17.529107Z",
+     "iopub.status.busy": "2026-02-08T07:56:17.528768Z",
+     "iopub.status.idle": "2026-02-08T07:56:26.916815Z",
+     "shell.execute_reply": "2026-02-08T07:56:26.916211Z"
+    },
+    "papermill": {
+     "duration": 9.393132,
+     "end_time": "2026-02-08T07:56:26.918063",
+     "exception": false,
+     "start_time": "2026-02-08T07:56:17.524931",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# ============================================\n",
+    "# Stage 3 – Dual-Token Fusion (RGB + FFT on Input)\n",
+    "# Full fine-tuning with DeepfakeBench metrics\n",
+    "# ============================================\n",
+    "\n",
+    "import os, random, torch, torch.nn as nn, torch.optim as optim\n",
+    "import numpy as np\n",
+    "from torchvision import datasets, transforms, models\n",
+    "from torch.utils.data import DataLoader\n",
+    "import torch.fft as fft\n",
+    "from tqdm import tqdm\n",
+    "from sklearn.metrics import roc_auc_score, f1_score, accuracy_score, roc_curve\n",
+    "from scipy.optimize import brentq\n",
+    "from scipy.interpolate import interp1d\n",
+    "from PIL import Image\n",
+    "from io import BytesIO\n",
+    "import warnings\n",
+    "import torch.nn.functional as F\n",
+    "warnings.filterwarnings(\"ignore\")\n",
+    "\n",
+    "class DualViewImageFolder(datasets.ImageFolder):\n",
+    "    \"\"\"\n",
+    "    Returns:\n",
+    "      x_rgb: normalized RGB tensor (for ResNet)\n",
+    "      x_raw: raw [0,1] tensor (for FFT)\n",
+    "      y: label\n",
+    "    \"\"\"\n",
+    "    def __init__(self, root, tfm_raw, tfm_rgb):\n",
+    "        super().__init__(root, transform=None)\n",
+    "        self.tfm_raw = tfm_raw\n",
+    "        self.tfm_rgb = tfm_rgb\n",
+    "\n",
+    "    def __getitem__(self, index):\n",
+    "        path, y = self.samples[index]\n",
+    "        img = self.loader(path)\n",
+    "\n",
+    "        x_raw = self.tfm_raw(img)   # ToTensor only (+ optional resize)\n",
+    "        x_rgb = self.tfm_rgb(img)   # ToTensor + Normalize (+ augments)\n",
+    "\n",
+    "        return x_rgb, x_raw, y\n",
+    "\n",
+    "\n",
+    "# ---- DeepfakeBench metric helper ----\n",
+    "def calc_metrics(y_true, y_prob):\n",
+    "    y_pred = (y_prob > 0.5).astype(int)\n",
+    "    auc  = roc_auc_score(y_true, y_prob)\n",
+    "    f1   = f1_score(y_true, y_pred)\n",
+    "    acc  = accuracy_score(y_true, y_pred)\n",
+    "    fpr, tpr, _ = roc_curve(y_true, y_prob)\n",
+    "    eer  = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)\n",
+    "    return auc, f1, eer, acc\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "1f94fc7e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T07:56:26.924045Z",
+     "iopub.status.busy": "2026-02-08T07:56:26.923440Z",
+     "iopub.status.idle": "2026-02-08T07:58:36.125561Z",
+     "shell.execute_reply": "2026-02-08T07:58:36.124584Z"
+    },
+    "papermill": {
+     "duration": 129.20635,
+     "end_time": "2026-02-08T07:58:36.126989",
+     "exception": false,
+     "start_time": "2026-02-08T07:56:26.920639",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.9/1.9 MB\u001b[0m \u001b[31m45.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m4.5/4.5 MB\u001b[0m \u001b[31m108.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m755.6/755.6 MB\u001b[0m \u001b[31m2.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m410.6/410.6 MB\u001b[0m \u001b[31m2.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m14.1/14.1 MB\u001b[0m \u001b[31m98.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m23.7/23.7 MB\u001b[0m \u001b[31m79.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m823.6/823.6 kB\u001b[0m \u001b[31m55.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m731.7/731.7 MB\u001b[0m \u001b[31m1.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m121.6/121.6 MB\u001b[0m \u001b[31m2.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.5/56.5 MB\u001b[0m \u001b[31m35.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m124.2/124.2 MB\u001b[0m \u001b[31m15.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m196.0/196.0 MB\u001b[0m \u001b[31m9.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m166.0/166.0 MB\u001b[0m \u001b[31m11.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m99.1/99.1 kB\u001b[0m \u001b[31m8.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m167.9/167.9 MB\u001b[0m \u001b[31m11.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.9/6.9 MB\u001b[0m \u001b[31m92.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25h\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\r\n",
+      "bigframes 2.12.0 requires google-cloud-bigquery-storage<3.0.0,>=2.30.0, which is not installed.\r\n",
+      "dopamine-rl 4.1.2 requires gymnasium>=1.0.0, but you have gymnasium 0.29.0 which is incompatible.\r\n",
+      "bigframes 2.12.0 requires google-cloud-bigquery[bqstorage,pandas]>=3.31.0, but you have google-cloud-bigquery 3.25.0 which is incompatible.\r\n",
+      "bigframes 2.12.0 requires rich<14,>=12.4.4, but you have rich 14.1.0 which is incompatible.\r\n",
+      "libcugraph-cu12 25.6.0 requires libraft-cu12==25.6.*, but you have libraft-cu12 25.2.0 which is incompatible.\r\n",
+      "torchaudio 2.6.0+cu124 requires torch==2.6.0, but you have torch 2.2.2 which is incompatible.\r\n",
+      "gradio 5.38.1 requires pydantic<2.12,>=2.0, but you have pydantic 2.12.0a1 which is incompatible.\r\n",
+      "plotnine 0.14.5 requires matplotlib>=3.8.0, but you have matplotlib 3.7.2 which is incompatible.\r\n",
+      "pylibcugraph-cu12 25.6.0 requires pylibraft-cu12==25.6.*, but you have pylibraft-cu12 25.2.0 which is incompatible.\r\n",
+      "pylibcugraph-cu12 25.6.0 requires rmm-cu12==25.6.*, but you have rmm-cu12 25.2.0 which is incompatible.\r\n",
+      "mlxtend 0.23.4 requires scikit-learn>=1.3.1, but you have scikit-learn 1.2.2 which is incompatible.\u001b[0m\u001b[31m\r\n",
+      "\u001b[0m"
+     ]
+    }
+   ],
+   "source": [
+    "!pip -q install facenet-pytorch\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "b1a6a5c0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T07:58:36.189023Z",
+     "iopub.status.busy": "2026-02-08T07:58:36.188737Z",
+     "iopub.status.idle": "2026-02-08T07:58:36.201664Z",
+     "shell.execute_reply": "2026-02-08T07:58:36.200824Z"
+    },
+    "papermill": {
+     "duration": 0.045294,
+     "end_time": "2026-02-08T07:58:36.202867",
+     "exception": false,
+     "start_time": "2026-02-08T07:58:36.157573",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ROOT contents: ['ffpp_kaggle']\n",
+      "/kaggle/input/ffpp-c23-frames-10-per-video/train/real exists? False count: 0\n",
+      "/kaggle/input/ffpp-c23-frames-10-per-video/train/fake exists? False count: 0\n",
+      "/kaggle/input/ffpp-c23-frames-10-per-video/val/real exists? False count: 0\n",
+      "/kaggle/input/ffpp-c23-frames-10-per-video/val/fake exists? False count: 0\n",
+      "/kaggle/input/ffpp-c23-frames-10-per-video/test/real exists? False count: 0\n",
+      "/kaggle/input/ffpp-c23-frames-10-per-video/test/fake exists? False count: 0\n"
+     ]
+    }
+   ],
+   "source": [
+    "import os, glob\n",
+    "\n",
+    "ROOT = \"/kaggle/input/ffpp-c23-frames-10-per-video\"\n",
+    "print(\"ROOT contents:\", os.listdir(ROOT))\n",
+    "\n",
+    "for p in [\"train\", \"val\", \"test\"]:\n",
+    "    for c in [\"real\", \"fake\"]:\n",
+    "        path = f\"{ROOT}/{p}/{c}\"\n",
+    "        print(path, \"exists?\", os.path.exists(path), \"count:\", len(glob.glob(path+\"/*\")))\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "eeeeec0d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T07:58:36.267079Z",
+     "iopub.status.busy": "2026-02-08T07:58:36.266236Z",
+     "iopub.status.idle": "2026-02-08T07:58:36.270465Z",
+     "shell.execute_reply": "2026-02-08T07:58:36.269936Z"
+    },
+    "papermill": {
+     "duration": 0.036232,
+     "end_time": "2026-02-08T07:58:36.271499",
+     "exception": false,
+     "start_time": "2026-02-08T07:58:36.235267",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "class FFTMagnitude(nn.Module):\n",
+    "    \"\"\"Compute log-scaled magnitude spectrum of input images.\"\"\"\n",
+    "    def forward(self, x):\n",
+    "        # x: [B, 3, H, W]\n",
+    "        f = torch.fft.fft2(x)\n",
+    "        fshift = torch.fft.fftshift(f)\n",
+    "        mag = torch.abs(fshift)\n",
+    "        mag = torch.log1p(mag)\n",
+    "        return mag\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "8ad7eea7",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T07:58:36.333683Z",
+     "iopub.status.busy": "2026-02-08T07:58:36.333134Z",
+     "iopub.status.idle": "2026-02-08T08:25:00.315330Z",
+     "shell.execute_reply": "2026-02-08T08:25:00.314541Z"
+    },
+    "papermill": {
+     "duration": 1584.014782,
+     "end_time": "2026-02-08T08:25:00.316670",
+     "exception": false,
+     "start_time": "2026-02-08T07:58:36.301888",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Device: cuda\n",
+      "train/real: 7981 images\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "100%|██████████| 7981/7981 [10:36<00:00, 12.54it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Saved: 7981\n",
+      "train/fake: 7982 images\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "100%|██████████| 7982/7982 [10:30<00:00, 12.67it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Saved: 7976\n",
+      "val/real: 997 images\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "100%|██████████| 997/997 [01:19<00:00, 12.56it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Saved: 997\n",
+      "val/fake: 997 images\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "100%|██████████| 997/997 [01:19<00:00, 12.59it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Saved: 997\n",
+      "test/real: 999 images\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "100%|██████████| 999/999 [01:18<00:00, 12.67it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Saved: 999\n",
+      "test/fake: 999 images\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "100%|██████████| 999/999 [01:18<00:00, 12.65it/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Saved: 998\n",
+      "Done: /kaggle/working/cropped_png\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "from pathlib import Path\n",
+    "from PIL import Image\n",
+    "from tqdm import tqdm\n",
+    "import torch\n",
+    "from facenet_pytorch import MTCNN\n",
+    "\n",
+    "DATASET_ROOT = Path(\"/kaggle/input/ffpp-c23-frames-10-per-video/ffpp_kaggle\")\n",
+    "OUT_ROOT = Path(\"/kaggle/working/cropped_png\")\n",
+    "\n",
+    "device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n",
+    "print(\"Device:\", device)\n",
+    "\n",
+    "mtcnn = MTCNN(image_size=224, margin=20, min_face_size=40, thresholds=[0.6,0.7,0.7], device=device)\n",
+    "\n",
+    "splits = [\"train\",\"val\",\"test\"]\n",
+    "classes = [\"real\",\"fake\"]\n",
+    "\n",
+    "def crop_split(split, cls):\n",
+    "    inp = DATASET_ROOT / split / cls\n",
+    "    assert inp.exists(), f\"Missing folder: {inp}\"\n",
+    "    out = OUT_ROOT / split / cls\n",
+    "    out.mkdir(parents=True, exist_ok=True)\n",
+    "\n",
+    "    files = list(inp.glob(\"*.jpg\")) + list(inp.glob(\"*.png\")) + list(inp.glob(\"*.jpeg\"))\n",
+    "    print(f\"{split}/{cls}: {len(files)} images\")\n",
+    "\n",
+    "    kept = 0\n",
+    "    for f in tqdm(files):\n",
+    "        try:\n",
+    "            img = Image.open(f).convert(\"RGB\")\n",
+    "        except Exception:\n",
+    "            continue\n",
+    "\n",
+    "        face = mtcnn(img)\n",
+    "        if face is None:\n",
+    "            continue\n",
+    "\n",
+    "        face_img = Image.fromarray((face.permute(1,2,0).cpu().numpy() * 255).astype(\"uint8\"))\n",
+    "        face_img = face_img.convert(\"RGB\")  # safety\n",
+    "        face_img.save(str(out / (f.stem + \".png\")))  # PNG avoids JPEG encoder issues\n",
+    "        kept += 1\n",
+    "\n",
+    "    print(f\"Saved: {kept}\")\n",
+    "\n",
+    "for s in splits:\n",
+    "    for c in classes:\n",
+    "        crop_split(s, c)\n",
+    "\n",
+    "print(\"Done:\", OUT_ROOT)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "f8b6121a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T08:25:01.149211Z",
+     "iopub.status.busy": "2026-02-08T08:25:01.148916Z",
+     "iopub.status.idle": "2026-02-08T08:25:01.157876Z",
+     "shell.execute_reply": "2026-02-08T08:25:01.157299Z"
+    },
+    "papermill": {
+     "duration": 0.424155,
+     "end_time": "2026-02-08T08:25:01.158942",
+     "exception": false,
+     "start_time": "2026-02-08T08:25:00.734787",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "class Stage3Hybrid(nn.Module):\n",
+    "    def __init__(self, embed_dim=512, num_heads=8, num_layers=4, use_fft=True):\n",
+    "        super().__init__()\n",
+    "        self.use_fft = use_fft\n",
+    "\n",
+    "        self.resnet = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)\n",
+    "        self.resnet = nn.Sequential(*list(self.resnet.children())[:-2])\n",
+    "\n",
+    "        self.fft_layer = FFTMagnitude()\n",
+    "\n",
+    "        self.proj_rgb = nn.Conv2d(2048, embed_dim, 1)\n",
+    "        self.proj_fft = nn.Conv2d(3, embed_dim, 1)\n",
+    "\n",
+    "        enc_layer = nn.TransformerEncoderLayer(\n",
+    "            d_model=embed_dim, nhead=num_heads, dim_feedforward=embed_dim*4,\n",
+    "            batch_first=True, norm_first=True\n",
+    "        )\n",
+    "        self.transformer = nn.TransformerEncoder(enc_layer, num_layers=num_layers)\n",
+    "\n",
+    "        self.pos_embed = nn.Parameter(torch.randn(1, 200, embed_dim))\n",
+    "\n",
+    "        self.cls_head = nn.Sequential(\n",
+    "            nn.LayerNorm(embed_dim),\n",
+    "            nn.Linear(embed_dim, 2)\n",
+    "        )\n",
+    "\n",
+    "    def forward(self, x_rgb, x_raw):\n",
+    "        # RGB tokens\n",
+    "        rgb_feat = self.resnet(x_rgb)\n",
+    "        rgb_map = self.proj_rgb(rgb_feat)\n",
+    "        rgb_map = F.adaptive_avg_pool2d(rgb_map, (10,10))\n",
+    "        rgb_tok = rgb_map.flatten(2).transpose(1,2)  # [B,100,512]\n",
+    "\n",
+    "        if self.use_fft:\n",
+    "            fft_img = self.fft_layer(x_raw)\n",
+    "            fft_img = (fft_img - fft_img.mean(dim=(2,3), keepdim=True)) / (fft_img.std(dim=(2,3), keepdim=True) + 1e-6)\n",
+    "            fft_map = self.proj_fft(fft_img)\n",
+    "            fft_map = F.adaptive_avg_pool2d(fft_map, (10,10))\n",
+    "            fft_tok = fft_map.flatten(2).transpose(1,2)\n",
+    "        else:\n",
+    "            fft_tok = torch.zeros_like(rgb_tok)\n",
+    "\n",
+    "        tokens = torch.cat([rgb_tok, fft_tok], dim=1)               # [B,200,512]\n",
+    "        tokens = tokens + self.pos_embed[:, :tokens.size(1), :]\n",
+    "\n",
+    "        out = self.transformer(tokens).mean(dim=1)\n",
+    "        return self.cls_head(out)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "41aead15",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T08:25:02.110126Z",
+     "iopub.status.busy": "2026-02-08T08:25:02.109830Z",
+     "iopub.status.idle": "2026-02-08T08:25:02.123426Z",
+     "shell.execute_reply": "2026-02-08T08:25:02.122679Z"
+    },
+    "papermill": {
+     "duration": 0.544114,
+     "end_time": "2026-02-08T08:25:02.124739",
+     "exception": false,
+     "start_time": "2026-02-08T08:25:01.580625",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "def train_stage3(\n",
+    "    data_root,\n",
+    "    use_fft=True,\n",
+    "    epochs=10,\n",
+    "    batch_size=16,\n",
+    "    lr=1e-4,\n",
+    "    run_tag=\"run\"\n",
+    "):\n",
+    "    device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n",
+    "    model = Stage3Hybrid(use_fft=use_fft).to(device)\n",
+    "    print(f\"use_fft={use_fft} | run_tag={run_tag}\")\n",
+    "\n",
+    "    # transforms\n",
+    "    tfm_raw = transforms.Compose([\n",
+    "        transforms.Resize((224,224)),\n",
+    "        transforms.ToTensor(),   # NO normalize\n",
+    "    ])\n",
+    "\n",
+    "\n",
+    "    tfm_rgb_train = transforms.Compose([\n",
+    "        transforms.Resize((224,224)),\n",
+    "        transforms.RandomHorizontalFlip(),\n",
+    "        transforms.ColorJitter(0.2,0.2,0.1,0.05),\n",
+    "        transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0)),\n",
+    "        transforms.ToTensor(),\n",
+    "        transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])\n",
+    "    ])\n",
+    "\n",
+    "\n",
+    "    tfm_rgb_eval = transforms.Compose([\n",
+    "        transforms.Resize((224,224)),\n",
+    "        transforms.ToTensor(),\n",
+    "        transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])\n",
+    "    ])\n",
+    "\n",
+    "    trainset = DualViewImageFolder(os.path.join(data_root, \"train\"), tfm_raw, tfm_rgb_train)\n",
+    "    valset = DualViewImageFolder(os.path.join(data_root, \"val\"), tfm_raw, tfm_rgb_eval)\n",
+    "    testset  = DualViewImageFolder(os.path.join(data_root, \"test\"),  tfm_raw, tfm_rgb_eval)\n",
+    "\n",
+    "    print(\"class_to_idx:\", trainset.class_to_idx)\n",
+    "    real_idx = trainset.class_to_idx[\"real\"]\n",
+    "\n",
+    "\n",
+    "    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True,  num_workers=2, pin_memory=True)\n",
+    "    valloader   = DataLoader(valset,   batch_size=batch_size, shuffle=False, num_workers=2, pin_memory=True)\n",
+    "    testloader  = DataLoader(testset,  batch_size=batch_size, shuffle=False, num_workers=2, pin_memory=True)\n",
+    "\n",
+    "    opt = optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-5)\n",
+    "    criterion = nn.CrossEntropyLoss()\n",
+    "    use_cuda = torch.cuda.is_available()\n",
+    "    device = \"cuda\" if use_cuda else \"cpu\"\n",
+    "    \n",
+    "    scaler = torch.amp.GradScaler(enabled=use_cuda)\n",
+    "\n",
+    "    best_auc = 0.0\n",
+    "\n",
+    "    for epoch in range(epochs):\n",
+    "        model.train()\n",
+    "        running_loss = 0.0\n",
+    "\n",
+    "        for x_rgb, x_raw, y in tqdm(trainloader, desc=f\"{run_tag} Epoch {epoch+1}/{epochs}\", ncols=100):\n",
+    "            x_rgb, x_raw, y = x_rgb.to(device), x_raw.to(device), y.to(device)\n",
+    "\n",
+    "            opt.zero_grad(set_to_none=True)\n",
+    "            with torch.amp.autocast(device_type=\"cuda\", enabled=use_cuda):\n",
+    "                logits = model(x_rgb, x_raw)\n",
+    "                loss = criterion(logits, y)\n",
+    "            scaler.scale(loss).backward()\n",
+    "            scaler.step(opt)\n",
+    "            scaler.update()\n",
+    "            running_loss += loss.item()\n",
+    "\n",
+    "        # validation\n",
+    "        model.eval()\n",
+    "        y_true, y_prob = [], []\n",
+    "        with torch.no_grad():\n",
+    "            for x_rgb, x_raw, y in valloader:\n",
+    "                x_rgb, x_raw = x_rgb.to(device), x_raw.to(device)\n",
+    "                probs = torch.softmax(model(x_rgb, x_raw), dim=1)[:, real_idx].cpu().numpy()\n",
+    "                y_true.extend(y.numpy())\n",
+    "                y_prob.extend(probs)\n",
+    "\n",
+    "        auc, f1, eer, acc = calc_metrics(np.array(y_true), np.array(y_prob))\n",
+    "        print(f\"{run_tag} Epoch {epoch+1}: loss={running_loss/len(trainloader):.4f} | AUROC={auc:.3f} | F1={f1:.3f} | EER={eer:.3f} | ACC={acc:.3f}\")\n",
+    "\n",
+    "        # (optional) save epoch ckpt\n",
+    "        torch.save(model.state_dict(), f\"/kaggle/working/{run_tag}_epoch{epoch+1}.pth\")\n",
+    "\n",
+    "     \n",
+    "        # save best for this run_tag\n",
+    "        if auc > best_auc:\n",
+    "            best_auc = auc\n",
+    "        \n",
+    "            # 1) simple weights (classic)\n",
+    "            torch.save(\n",
+    "                model.state_dict(),\n",
+    "                f\"/kaggle/working/best_{run_tag}.pth\"\n",
+    "            )\n",
+    "        \n",
+    "            # 2) richer checkpoint (recommended)\n",
+    "            torch.save(\n",
+    "                {\n",
+    "                    \"state_dict\": model.state_dict(),\n",
+    "                    \"use_fft\": use_fft,\n",
+    "                    \"embed_dim\": 512,\n",
+    "                    \"num_layers\": 4,\n",
+    "                    \"num_heads\": 8,\n",
+    "                    \"epoch\": epoch + 1,\n",
+    "                    \"best_auc\": best_auc,\n",
+    "                    \"run_tag\": run_tag,\n",
+    "                },\n",
+    "                f\"/kaggle/working/best_{run_tag}.ckpt\"\n",
+    "            )\n",
+    "        \n",
+    "            print(f\" New best {run_tag}: AUROC={best_auc:.3f}\")\n",
+    "\n",
+    "\n",
+    "    return model, testloader, real_idx\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "c1317846",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T08:25:02.993589Z",
+     "iopub.status.busy": "2026-02-08T08:25:02.992883Z",
+     "iopub.status.idle": "2026-02-08T08:25:02.999298Z",
+     "shell.execute_reply": "2026-02-08T08:25:02.998416Z"
+    },
+    "papermill": {
+     "duration": 0.443527,
+     "end_time": "2026-02-08T08:25:03.000702",
+     "exception": false,
+     "start_time": "2026-02-08T08:25:02.557175",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "def evaluate(model, testloader, real_idx, tag=\"TEST\"):\n",
+    "    device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n",
+    "    model.eval()\n",
+    "    y_true, y_prob = [], []\n",
+    "\n",
+    "    with torch.no_grad():\n",
+    "        for x_rgb, x_raw, y in tqdm(testloader, desc=tag, ncols=100):\n",
+    "            x_rgb, x_raw = x_rgb.to(device), x_raw.to(device)\n",
+    "            probs = torch.softmax(model(x_rgb, x_raw), dim=1)[:, real_idx].cpu().numpy()\n",
+    "            y_true.extend(y.numpy())\n",
+    "            y_prob.extend(probs)\n",
+    "\n",
+    "    auc, f1, eer, acc = calc_metrics(np.array(y_true), np.array(y_prob))\n",
+    "    print(f\"{tag} → AUROC={auc:.3f} | F1={f1:.3f} | EER={eer:.3f} | ACC={acc:.3f}\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "d90f0a6e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T08:25:04.016396Z",
+     "iopub.status.busy": "2026-02-08T08:25:04.016148Z",
+     "iopub.status.idle": "2026-02-08T08:25:04.054203Z",
+     "shell.execute_reply": "2026-02-08T08:25:04.053380Z"
+    },
+    "papermill": {
+     "duration": 0.615857,
+     "end_time": "2026-02-08T08:25:04.055297",
+     "exception": false,
+     "start_time": "2026-02-08T08:25:03.439440",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "train real 7981\n",
+      "train fake 7976\n",
+      "val real 997\n",
+      "val fake 997\n",
+      "test real 999\n",
+      "test fake 998\n"
+     ]
+    }
+   ],
+   "source": [
+    "import glob\n",
+    "for p in [\"train\",\"val\",\"test\"]:\n",
+    "    for c in [\"real\",\"fake\"]:\n",
+    "        print(p, c, len(glob.glob(f\"/kaggle/working/cropped_png/{p}/{c}/*.png\")))\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "b46e48a5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T08:25:04.893230Z",
+     "iopub.status.busy": "2026-02-08T08:25:04.892641Z",
+     "iopub.status.idle": "2026-02-08T08:25:04.900954Z",
+     "shell.execute_reply": "2026-02-08T08:25:04.900138Z"
+    },
+    "papermill": {
+     "duration": 0.426903,
+     "end_time": "2026-02-08T08:25:04.902019",
+     "exception": false,
+     "start_time": "2026-02-08T08:25:04.475116",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['test', 'train', 'val']\n",
+      "['real', 'fake']\n",
+      "['821_005.png', '002_004.png', '088_007.png', '639_010.png', '314_001.png']\n"
+     ]
+    }
+   ],
+   "source": [
+    "import os\n",
+    "print(os.listdir(\"/kaggle/working/cropped_png\"))\n",
+    "print(os.listdir(\"/kaggle/working/cropped_png/train\"))\n",
+    "print(os.listdir(\"/kaggle/working/cropped_png/train/real\")[:5])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "da1df2c6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-08T08:25:05.818499Z",
+     "iopub.status.busy": "2026-02-08T08:25:05.818223Z",
+     "iopub.status.idle": "2026-02-08T09:07:42.351613Z",
+     "shell.execute_reply": "2026-02-08T09:07:42.350595Z"
+    },
+    "papermill": {
+     "duration": 2556.953338,
+     "end_time": "2026-02-08T09:07:42.353500",
+     "exception": false,
+     "start_time": "2026-02-08T08:25:05.400162",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Downloading: \"https://download.pytorch.org/models/resnet50-0676ba61.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-0676ba61.pth\n",
+      "100%|██████████| 97.8M/97.8M [00:00<00:00, 204MB/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "use_fft=False | run_tag=A_RGB\n",
+      "class_to_idx: {'fake': 0, 'real': 1}\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "A_RGB Epoch 1/2: 100%|████████████████████████████████████████████| 998/998 [02:25<00:00,  6.85it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "A_RGB Epoch 1: loss=0.3714 | AUROC=0.983 | F1=0.926 | EER=0.076 | ACC=0.925\n",
+      " New best A_RGB: AUROC=0.983\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "A_RGB Epoch 2/2: 100%|████████████████████████████████████████████| 998/998 [02:25<00:00,  6.87it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "A_RGB Epoch 2: loss=0.1756 | AUROC=0.993 | F1=0.944 | EER=0.042 | ACC=0.945\n",
+      " New best A_RGB: AUROC=0.993\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "A_RGB test: 100%|█████████████████████████████████████████████████| 125/125 [00:05<00:00, 21.52it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "A_RGB test → AUROC=0.990 | F1=0.940 | EER=0.045 | ACC=0.941\n",
+      "use_fft=True | run_tag=B_RGB_FFT\n",
+      "class_to_idx: {'fake': 0, 'real': 1}\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 1/10: 100%|███████████████████████████████████████| 998/998 [03:34<00:00,  4.65it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 1: loss=0.3616 | AUROC=0.984 | F1=0.931 | EER=0.062 | ACC=0.928\n",
+      " New best B_RGB_FFT: AUROC=0.984\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 2/10: 100%|███████████████████████████████████████| 998/998 [03:34<00:00,  4.65it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 2: loss=0.1719 | AUROC=0.992 | F1=0.961 | EER=0.044 | ACC=0.960\n",
+      " New best B_RGB_FFT: AUROC=0.992\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 3/10: 100%|███████████████████████████████████████| 998/998 [03:34<00:00,  4.65it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 3: loss=0.1174 | AUROC=0.995 | F1=0.967 | EER=0.035 | ACC=0.967\n",
+      " New best B_RGB_FFT: AUROC=0.995\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 4/10: 100%|███████████████████████████████████████| 998/998 [03:34<00:00,  4.65it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 4: loss=0.0852 | AUROC=0.997 | F1=0.983 | EER=0.016 | ACC=0.983\n",
+      " New best B_RGB_FFT: AUROC=0.997\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 5/10: 100%|███████████████████████████████████████| 998/998 [03:34<00:00,  4.65it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 5: loss=0.0669 | AUROC=0.995 | F1=0.958 | EER=0.038 | ACC=0.957\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 6/10: 100%|███████████████████████████████████████| 998/998 [03:34<00:00,  4.64it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 6: loss=0.0583 | AUROC=0.995 | F1=0.967 | EER=0.031 | ACC=0.967\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 7/10: 100%|███████████████████████████████████████| 998/998 [03:35<00:00,  4.63it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 7: loss=0.0558 | AUROC=0.996 | F1=0.971 | EER=0.027 | ACC=0.971\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 8/10: 100%|███████████████████████████████████████| 998/998 [03:35<00:00,  4.63it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 8: loss=0.0502 | AUROC=0.994 | F1=0.943 | EER=0.032 | ACC=0.940\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 9/10: 100%|███████████████████████████████████████| 998/998 [03:35<00:00,  4.63it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 9: loss=0.0424 | AUROC=0.997 | F1=0.966 | EER=0.022 | ACC=0.966\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 10/10: 100%|██████████████████████████████████████| 998/998 [03:35<00:00,  4.63it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT Epoch 10: loss=0.0377 | AUROC=0.998 | F1=0.976 | EER=0.022 | ACC=0.976\n",
+      " New best B_RGB_FFT: AUROC=0.998\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT_10epoch test: 100%|█████████████████████████████████████| 125/125 [00:08<00:00, 15.03it/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "B_RGB_FFT_10epoch test → AUROC=0.996 | F1=0.969 | EER=0.032 | ACC=0.969\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "DATA_ROOT = \"/kaggle/working/cropped_png\"\n",
+    "\n",
+    "m_rgb, t_rgb, rid = train_stage3(DATA_ROOT, use_fft=False, epochs=2, run_tag=\"A_RGB\")\n",
+    "evaluate(m_rgb, t_rgb, rid, tag=\"A_RGB test\")\n",
+    "\n",
+    "m_fft10, t_fft10, rid = train_stage3(DATA_ROOT, use_fft=True, epochs=10, run_tag=\"B_RGB_FFT\")\n",
+    "evaluate(m_fft10, t_fft10, rid, tag=\"B_RGB_FFT_10epoch test\")\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "gpu",
+   "dataSources": [
+    {
+     "datasetId": 501529,
+     "sourceId": 939937,
+     "sourceType": "datasetVersion"
+    },
+    {
+     "datasetId": 9437241,
+     "sourceId": 14764390,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 31154,
+   "isGpuEnabled": true,
+   "isInternetEnabled": true,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 4291.231537,
+   "end_time": "2026-02-08T09:07:45.211202",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2026-02-08T07:56:13.979665",
+   "version": "2.6.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
