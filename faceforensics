@@ -3,21 +3,21 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "18fb8b76",
+   "id": "82754c12",
    "metadata": {
     "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
     "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:17:46.273313Z",
-     "iopub.status.busy": "2026-02-09T04:17:46.272773Z",
-     "iopub.status.idle": "2026-02-09T04:17:55.698426Z",
-     "shell.execute_reply": "2026-02-09T04:17:55.697607Z"
+     "iopub.execute_input": "2026-02-09T06:29:01.688608Z",
+     "iopub.status.busy": "2026-02-09T06:29:01.688350Z",
+     "iopub.status.idle": "2026-02-09T06:29:11.478170Z",
+     "shell.execute_reply": "2026-02-09T06:29:11.477553Z"
     },
     "papermill": {
-     "duration": 9.430753,
-     "end_time": "2026-02-09T04:17:55.699830",
+     "duration": 9.795375,
+     "end_time": "2026-02-09T06:29:11.479581",
      "exception": false,
-     "start_time": "2026-02-09T04:17:46.269077",
+     "start_time": "2026-02-09T06:29:01.684206",
      "status": "completed"
     },
     "tags": []
@@ -80,19 +80,19 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "03cfd2c7",
+   "id": "268747d4",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:17:55.705519Z",
-     "iopub.status.busy": "2026-02-09T04:17:55.704997Z",
-     "iopub.status.idle": "2026-02-09T04:20:48.497579Z",
-     "shell.execute_reply": "2026-02-09T04:20:48.496570Z"
+     "iopub.execute_input": "2026-02-09T06:29:11.485549Z",
+     "iopub.status.busy": "2026-02-09T06:29:11.485009Z",
+     "iopub.status.idle": "2026-02-09T06:31:40.477586Z",
+     "shell.execute_reply": "2026-02-09T06:31:40.476544Z"
     },
     "papermill": {
-     "duration": 172.796778,
-     "end_time": "2026-02-09T04:20:48.499127",
+     "duration": 148.996955,
+     "end_time": "2026-02-09T06:31:40.479195",
      "exception": false,
-     "start_time": "2026-02-09T04:17:55.702349",
+     "start_time": "2026-02-09T06:29:11.482240",
      "status": "completed"
     },
     "tags": []
@@ -102,22 +102,22 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.9/1.9 MB\u001b[0m \u001b[31m23.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m4.5/4.5 MB\u001b[0m \u001b[31m101.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.9/1.9 MB\u001b[0m \u001b[31m37.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m4.5/4.5 MB\u001b[0m \u001b[31m109.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
       "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m755.6/755.6 MB\u001b[0m \u001b[31m2.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m410.6/410.6 MB\u001b[0m \u001b[31m3.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m14.1/14.1 MB\u001b[0m \u001b[31m13.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m23.7/23.7 MB\u001b[0m \u001b[31m24.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m823.6/823.6 kB\u001b[0m \u001b[31m21.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m731.7/731.7 MB\u001b[0m \u001b[31m1.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m121.6/121.6 MB\u001b[0m \u001b[31m13.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.5/56.5 MB\u001b[0m \u001b[31m21.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m124.2/124.2 MB\u001b[0m \u001b[31m13.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m196.0/196.0 MB\u001b[0m \u001b[31m8.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m166.0/166.0 MB\u001b[0m \u001b[31m10.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m99.1/99.1 kB\u001b[0m \u001b[31m8.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m167.9/167.9 MB\u001b[0m \u001b[31m10.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.9/6.9 MB\u001b[0m \u001b[31m56.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m410.6/410.6 MB\u001b[0m \u001b[31m3.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m14.1/14.1 MB\u001b[0m \u001b[31m52.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m23.7/23.7 MB\u001b[0m \u001b[31m42.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m823.6/823.6 kB\u001b[0m \u001b[31m35.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m731.7/731.7 MB\u001b[0m \u001b[31m1.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m121.6/121.6 MB\u001b[0m \u001b[31m10.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.5/56.5 MB\u001b[0m \u001b[31m4.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m124.2/124.2 MB\u001b[0m \u001b[31m12.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m196.0/196.0 MB\u001b[0m \u001b[31m9.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m166.0/166.0 MB\u001b[0m \u001b[31m10.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m99.1/99.1 kB\u001b[0m \u001b[31m7.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m167.9/167.9 MB\u001b[0m \u001b[31m10.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.9/6.9 MB\u001b[0m \u001b[31m85.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
       "\u001b[?25h\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\r\n",
       "bigframes 2.12.0 requires google-cloud-bigquery-storage<3.0.0,>=2.30.0, which is not installed.\r\n",
       "dopamine-rl 4.1.2 requires gymnasium>=1.0.0, but you have gymnasium 0.29.0 which is incompatible.\r\n",
@@ -141,19 +141,19 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "5242d28b",
+   "id": "09f77f09",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:20:48.631994Z",
-     "iopub.status.busy": "2026-02-09T04:20:48.631234Z",
-     "iopub.status.idle": "2026-02-09T04:20:48.636071Z",
-     "shell.execute_reply": "2026-02-09T04:20:48.635489Z"
+     "iopub.execute_input": "2026-02-09T06:31:40.558243Z",
+     "iopub.status.busy": "2026-02-09T06:31:40.557493Z",
+     "iopub.status.idle": "2026-02-09T06:31:40.562390Z",
+     "shell.execute_reply": "2026-02-09T06:31:40.561789Z"
     },
     "papermill": {
-     "duration": 0.070418,
-     "end_time": "2026-02-09T04:20:48.637139",
+     "duration": 0.045363,
+     "end_time": "2026-02-09T06:31:40.563471",
      "exception": false,
-     "start_time": "2026-02-09T04:20:48.566721",
+     "start_time": "2026-02-09T06:31:40.518108",
      "status": "completed"
     },
     "tags": []
@@ -174,19 +174,19 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "ba7b274a",
+   "id": "d896b6dc",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:20:48.766156Z",
-     "iopub.status.busy": "2026-02-09T04:20:48.765560Z",
-     "iopub.status.idle": "2026-02-09T04:46:04.349440Z",
-     "shell.execute_reply": "2026-02-09T04:46:04.348480Z"
+     "iopub.execute_input": "2026-02-09T06:31:40.640841Z",
+     "iopub.status.busy": "2026-02-09T06:31:40.640545Z",
+     "iopub.status.idle": "2026-02-09T06:59:23.586362Z",
+     "shell.execute_reply": "2026-02-09T06:59:23.585479Z"
     },
     "papermill": {
-     "duration": 1515.650757,
-     "end_time": "2026-02-09T04:46:04.351692",
+     "duration": 1662.985912,
+     "end_time": "2026-02-09T06:59:23.587777",
      "exception": false,
-     "start_time": "2026-02-09T04:20:48.700935",
+     "start_time": "2026-02-09T06:31:40.601865",
      "status": "completed"
     },
     "tags": []
@@ -204,7 +204,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 7981/7981 [10:07<00:00, 13.13it/s]\n"
+      "100%|██████████| 7981/7981 [11:06<00:00, 11.98it/s]\n"
      ]
     },
     {
@@ -219,7 +219,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 7982/7982 [10:01<00:00, 13.26it/s]\n"
+      "100%|██████████| 7982/7982 [11:02<00:00, 12.04it/s]\n"
      ]
     },
     {
@@ -234,7 +234,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 997/997 [01:17<00:00, 12.89it/s]\n"
+      "100%|██████████| 997/997 [01:23<00:00, 12.00it/s]\n"
      ]
     },
     {
@@ -249,7 +249,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 997/997 [01:16<00:00, 13.06it/s]\n"
+      "100%|██████████| 997/997 [01:23<00:00, 12.00it/s]\n"
      ]
     },
     {
@@ -264,7 +264,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 999/999 [01:16<00:00, 13.07it/s]\n"
+      "100%|██████████| 999/999 [01:23<00:00, 11.90it/s]\n"
      ]
     },
     {
@@ -279,7 +279,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 999/999 [01:14<00:00, 13.35it/s]"
+      "100%|██████████| 999/999 [01:22<00:00, 12.06it/s]"
      ]
     },
     {
@@ -353,19 +353,19 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "855ef16a",
+   "id": "8f68348a",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:46:05.326170Z",
-     "iopub.status.busy": "2026-02-09T04:46:05.325886Z",
-     "iopub.status.idle": "2026-02-09T04:46:05.334072Z",
-     "shell.execute_reply": "2026-02-09T04:46:05.333527Z"
+     "iopub.execute_input": "2026-02-09T06:59:24.515790Z",
+     "iopub.status.busy": "2026-02-09T06:59:24.515501Z",
+     "iopub.status.idle": "2026-02-09T06:59:24.523748Z",
+     "shell.execute_reply": "2026-02-09T06:59:24.523212Z"
     },
     "papermill": {
-     "duration": 0.535032,
-     "end_time": "2026-02-09T04:46:05.335127",
+     "duration": 0.516295,
+     "end_time": "2026-02-09T06:59:24.524788",
      "exception": false,
-     "start_time": "2026-02-09T04:46:04.800095",
+     "start_time": "2026-02-09T06:59:24.008493",
      "status": "completed"
     },
     "tags": []
@@ -424,19 +424,19 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "18b4ace7",
+   "id": "c266d770",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:46:06.220087Z",
-     "iopub.status.busy": "2026-02-09T04:46:06.219806Z",
-     "iopub.status.idle": "2026-02-09T04:46:06.233741Z",
-     "shell.execute_reply": "2026-02-09T04:46:06.232981Z"
+     "iopub.execute_input": "2026-02-09T06:59:25.361382Z",
+     "iopub.status.busy": "2026-02-09T06:59:25.361119Z",
+     "iopub.status.idle": "2026-02-09T06:59:25.374340Z",
+     "shell.execute_reply": "2026-02-09T06:59:25.373785Z"
     },
     "papermill": {
-     "duration": 0.459265,
-     "end_time": "2026-02-09T04:46:06.234957",
+     "duration": 0.432103,
+     "end_time": "2026-02-09T06:59:25.375463",
      "exception": false,
-     "start_time": "2026-02-09T04:46:05.775692",
+     "start_time": "2026-02-09T06:59:24.943360",
      "status": "completed"
     },
     "tags": []
@@ -461,11 +461,17 @@
     "        model.load_state_dict(state, strict=True)\n",
     "        print(\"Loaded pretrained 140k weights\")\n",
     "        \n",
-    "    for name, param in model.resnet.named_parameters():\n",
-    "        if \"layer3\" in name or \"layer4\" in name:\n",
-    "            param.requires_grad = True\n",
-    "        else:\n",
-    "            param.requires_grad = False\n",
+    "  \n",
+    "    #unfreezing layer 3 & 4\n",
+    "    for p in model.resnet.parameters():\n",
+    "        p.requires_grad = False\n",
+    "    \n",
+    "    # unfreeze layer3 and layer4 in the sequential\n",
+    "    for p in model.resnet[6].parameters():  # layer3\n",
+    "        p.requires_grad = True\n",
+    "    for p in model.resnet[7].parameters():  # layer4\n",
+    "        p.requires_grad = True\n",
+    "\n",
     "\n",
     "\n",
     "\n",
@@ -580,19 +586,19 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "8eac7408",
+   "id": "21def6d2",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:46:07.204528Z",
-     "iopub.status.busy": "2026-02-09T04:46:07.204254Z",
-     "iopub.status.idle": "2026-02-09T04:46:07.209540Z",
-     "shell.execute_reply": "2026-02-09T04:46:07.208987Z"
+     "iopub.execute_input": "2026-02-09T06:59:26.300609Z",
+     "iopub.status.busy": "2026-02-09T06:59:26.300331Z",
+     "iopub.status.idle": "2026-02-09T06:59:26.305651Z",
+     "shell.execute_reply": "2026-02-09T06:59:26.305116Z"
     },
     "papermill": {
-     "duration": 0.530396,
-     "end_time": "2026-02-09T04:46:07.210624",
+     "duration": 0.509326,
+     "end_time": "2026-02-09T06:59:26.306702",
      "exception": false,
-     "start_time": "2026-02-09T04:46:06.680228",
+     "start_time": "2026-02-09T06:59:25.797376",
      "status": "completed"
     },
     "tags": []
@@ -618,19 +624,19 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "a79dd221",
+   "id": "6f5df382",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:46:08.099216Z",
-     "iopub.status.busy": "2026-02-09T04:46:08.098481Z",
-     "iopub.status.idle": "2026-02-09T04:46:08.134377Z",
-     "shell.execute_reply": "2026-02-09T04:46:08.133369Z"
+     "iopub.execute_input": "2026-02-09T06:59:27.146440Z",
+     "iopub.status.busy": "2026-02-09T06:59:27.145768Z",
+     "iopub.status.idle": "2026-02-09T06:59:27.181402Z",
+     "shell.execute_reply": "2026-02-09T06:59:27.180566Z"
     },
     "papermill": {
-     "duration": 0.481768,
-     "end_time": "2026-02-09T04:46:08.135570",
+     "duration": 0.457245,
+     "end_time": "2026-02-09T06:59:27.182543",
      "exception": false,
-     "start_time": "2026-02-09T04:46:07.653802",
+     "start_time": "2026-02-09T06:59:26.725298",
      "status": "completed"
     },
     "tags": []
@@ -659,19 +665,19 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "f362b168",
+   "id": "9238d685",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:46:09.132489Z",
-     "iopub.status.busy": "2026-02-09T04:46:09.132219Z",
-     "iopub.status.idle": "2026-02-09T04:46:09.144097Z",
-     "shell.execute_reply": "2026-02-09T04:46:09.143230Z"
+     "iopub.execute_input": "2026-02-09T06:59:28.099623Z",
+     "iopub.status.busy": "2026-02-09T06:59:28.099343Z",
+     "iopub.status.idle": "2026-02-09T06:59:28.107970Z",
+     "shell.execute_reply": "2026-02-09T06:59:28.107261Z"
     },
     "papermill": {
-     "duration": 0.561952,
-     "end_time": "2026-02-09T04:46:09.146064",
+     "duration": 0.506952,
+     "end_time": "2026-02-09T06:59:28.109235",
      "exception": false,
-     "start_time": "2026-02-09T04:46:08.584112",
+     "start_time": "2026-02-09T06:59:27.602283",
      "status": "completed"
     },
     "tags": []
@@ -681,9 +687,9 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "['train', 'test', 'val']\n",
-      "['real', 'fake']\n",
-      "['307_002.png', '126_002.png', '436_001.png', '322_003.png', '899_008.png']\n"
+      "['train', 'val', 'test']\n",
+      "['fake', 'real']\n",
+      "['175_006.png', '186_005.png', '046_003.png', '173_004.png', '784_010.png']\n"
      ]
     }
    ],
@@ -697,19 +703,19 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "7ba0d380",
+   "id": "a1f7f4f8",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T04:46:10.026776Z",
-     "iopub.status.busy": "2026-02-09T04:46:10.026465Z",
-     "iopub.status.idle": "2026-02-09T05:02:41.207817Z",
-     "shell.execute_reply": "2026-02-09T05:02:41.206724Z"
+     "iopub.execute_input": "2026-02-09T06:59:28.956876Z",
+     "iopub.status.busy": "2026-02-09T06:59:28.956597Z",
+     "iopub.status.idle": "2026-02-09T07:18:52.309420Z",
+     "shell.execute_reply": "2026-02-09T07:18:52.308399Z"
     },
     "papermill": {
-     "duration": 991.622374,
-     "end_time": "2026-02-09T05:02:41.209162",
+     "duration": 1163.772959,
+     "end_time": "2026-02-09T07:18:52.310611",
      "exception": false,
-     "start_time": "2026-02-09T04:46:09.586788",
+     "start_time": "2026-02-09T06:59:28.537652",
      "status": "completed"
     },
     "tags": []
@@ -720,7 +726,7 @@
      "output_type": "stream",
      "text": [
       "Downloading: \"https://download.pytorch.org/models/resnet50-0676ba61.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-0676ba61.pth\n",
-      "100%|██████████| 97.8M/97.8M [00:00<00:00, 207MB/s]\n"
+      "100%|██████████| 97.8M/97.8M [00:00<00:00, 174MB/s]\n"
      ]
     },
     {
@@ -735,102 +741,104 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 1/6: 100%|█████████████████████████████████████| 998/998 [02:35<00:00,  6.44it/s]\n"
+      "140k_to_FFPP Epoch 1/6: 100%|█████████████████████████████████████| 998/998 [03:03<00:00,  5.44it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 1: loss=0.7761 | AUROC=0.484 | F1=0.567 | EER=0.513 | ACC=0.488\n",
-      " New best 140k_to_FFPP: AUROC=0.484\n"
+      "140k_to_FFPP Epoch 1: loss=0.9627 | AUROC=0.549 | F1=0.544 | EER=0.470 | ACC=0.533\n",
+      " New best 140k_to_FFPP: AUROC=0.549\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 2/6: 100%|█████████████████████████████████████| 998/998 [02:34<00:00,  6.47it/s]\n"
+      "140k_to_FFPP Epoch 2/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.47it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 2: loss=0.6956 | AUROC=0.518 | F1=0.288 | EER=0.475 | ACC=0.510\n",
-      " New best 140k_to_FFPP: AUROC=0.518\n"
+      "140k_to_FFPP Epoch 2: loss=0.6833 | AUROC=0.604 | F1=0.588 | EER=0.426 | ACC=0.578\n",
+      " New best 140k_to_FFPP: AUROC=0.604\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 3/6: 100%|█████████████████████████████████████| 998/998 [02:34<00:00,  6.45it/s]\n"
+      "140k_to_FFPP Epoch 3/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.46it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 3: loss=0.6952 | AUROC=0.513 | F1=0.024 | EER=0.486 | ACC=0.501\n"
+      "140k_to_FFPP Epoch 3: loss=0.6457 | AUROC=0.706 | F1=0.662 | EER=0.346 | ACC=0.650\n",
+      " New best 140k_to_FFPP: AUROC=0.706\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 4/6: 100%|█████████████████████████████████████| 998/998 [02:34<00:00,  6.46it/s]\n"
+      "140k_to_FFPP Epoch 4/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.47it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 4: loss=0.6939 | AUROC=0.520 | F1=0.593 | EER=0.488 | ACC=0.515\n",
-      " New best 140k_to_FFPP: AUROC=0.520\n"
+      "140k_to_FFPP Epoch 4: loss=0.5809 | AUROC=0.789 | F1=0.716 | EER=0.283 | ACC=0.713\n",
+      " New best 140k_to_FFPP: AUROC=0.789\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 5/6: 100%|█████████████████████████████████████| 998/998 [02:34<00:00,  6.45it/s]\n"
+      "140k_to_FFPP Epoch 5/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.46it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 5: loss=0.6931 | AUROC=0.524 | F1=0.358 | EER=0.476 | ACC=0.513\n",
-      " New best 140k_to_FFPP: AUROC=0.524\n"
+      "140k_to_FFPP Epoch 5: loss=0.5204 | AUROC=0.832 | F1=0.746 | EER=0.254 | ACC=0.750\n",
+      " New best 140k_to_FFPP: AUROC=0.832\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 6/6: 100%|█████████████████████████████████████| 998/998 [02:34<00:00,  6.45it/s]\n"
+      "140k_to_FFPP Epoch 6/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.46it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 6: loss=0.6926 | AUROC=0.518 | F1=0.649 | EER=0.485 | ACC=0.504\n"
+      "140k_to_FFPP Epoch 6: loss=0.4674 | AUROC=0.853 | F1=0.774 | EER=0.230 | ACC=0.772\n",
+      " New best 140k_to_FFPP: AUROC=0.853\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "FFPP test: 100%|██████████████████████████████████████████████████| 125/125 [00:08<00:00, 15.09it/s]"
+      "FFPP test: 100%|██████████████████████████████████████████████████| 125/125 [00:08<00:00, 15.00it/s]"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "FFPP test → AUROC=0.551 | F1=0.656 | EER=0.464 | ACC=0.510\n"
+      "FFPP test → AUROC=0.851 | F1=0.756 | EER=0.243 | ACC=0.758\n"
      ]
     },
     {
@@ -850,7 +858,7 @@
     "    pretrained_path=PRETRAINED_140K,\n",
     "    use_fft=True,\n",
     "    epochs=6,\n",
-    "    lr=5e-5,\n",
+    "    lr=1e-5,\n",
     "    run_tag=\"140k_to_FFPP\"\n",
     ")\n",
     "\n",
@@ -904,14 +912,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 2700.785206,
-   "end_time": "2026-02-09T05:02:43.524781",
+   "duration": 2996.673802,
+   "end_time": "2026-02-09T07:18:54.920133",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2026-02-09T04:17:42.739575",
+   "start_time": "2026-02-09T06:28:58.246331",
    "version": "2.6.0"
   }
  },
