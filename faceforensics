@@ -3,21 +3,21 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "a6c12d04",
+   "id": "5f2b1eb8",
    "metadata": {
     "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
     "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
     "execution": {
-     "iopub.execute_input": "2026-02-09T08:48:24.938653Z",
-     "iopub.status.busy": "2026-02-09T08:48:24.937932Z",
-     "iopub.status.idle": "2026-02-09T08:48:34.396237Z",
-     "shell.execute_reply": "2026-02-09T08:48:34.395618Z"
+     "iopub.execute_input": "2026-02-09T12:15:04.063715Z",
+     "iopub.status.busy": "2026-02-09T12:15:04.063130Z",
+     "iopub.status.idle": "2026-02-09T12:15:13.584934Z",
+     "shell.execute_reply": "2026-02-09T12:15:13.584066Z"
     },
     "papermill": {
-     "duration": 9.463845,
-     "end_time": "2026-02-09T08:48:34.397602",
+     "duration": 9.528249,
+     "end_time": "2026-02-09T12:15:13.586398",
      "exception": false,
-     "start_time": "2026-02-09T08:48:24.933757",
+     "start_time": "2026-02-09T12:15:04.058149",
      "status": "completed"
     },
     "tags": []
@@ -80,19 +80,19 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "a0f8a30f",
+   "id": "f46485b7",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T08:48:34.403644Z",
-     "iopub.status.busy": "2026-02-09T08:48:34.403104Z",
-     "iopub.status.idle": "2026-02-09T08:50:53.152383Z",
-     "shell.execute_reply": "2026-02-09T08:50:53.151406Z"
+     "iopub.execute_input": "2026-02-09T12:15:13.592209Z",
+     "iopub.status.busy": "2026-02-09T12:15:13.591534Z",
+     "iopub.status.idle": "2026-02-09T12:17:39.852859Z",
+     "shell.execute_reply": "2026-02-09T12:17:39.851796Z"
     },
     "papermill": {
-     "duration": 138.753606,
-     "end_time": "2026-02-09T08:50:53.153875",
+     "duration": 146.265525,
+     "end_time": "2026-02-09T12:17:39.854422",
      "exception": false,
-     "start_time": "2026-02-09T08:48:34.400269",
+     "start_time": "2026-02-09T12:15:13.588897",
      "status": "completed"
     },
     "tags": []
@@ -102,22 +102,22 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.9/1.9 MB\u001b[0m \u001b[31m39.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m4.5/4.5 MB\u001b[0m \u001b[31m116.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m755.6/755.6 MB\u001b[0m \u001b[31m2.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m410.6/410.6 MB\u001b[0m \u001b[31m2.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m14.1/14.1 MB\u001b[0m \u001b[31m103.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m23.7/23.7 MB\u001b[0m \u001b[31m79.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m823.6/823.6 kB\u001b[0m \u001b[31m54.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m731.7/731.7 MB\u001b[0m \u001b[31m2.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m121.6/121.6 MB\u001b[0m \u001b[31m15.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.5/56.5 MB\u001b[0m \u001b[31m3.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m124.2/124.2 MB\u001b[0m \u001b[31m4.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m196.0/196.0 MB\u001b[0m \u001b[31m9.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m166.0/166.0 MB\u001b[0m \u001b[31m10.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m99.1/99.1 kB\u001b[0m \u001b[31m8.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m167.9/167.9 MB\u001b[0m \u001b[31m10.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
-      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.9/6.9 MB\u001b[0m \u001b[31m71.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.9/1.9 MB\u001b[0m \u001b[31m76.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m4.5/4.5 MB\u001b[0m \u001b[31m31.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m755.6/755.6 MB\u001b[0m \u001b[31m2.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m410.6/410.6 MB\u001b[0m \u001b[31m4.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m14.1/14.1 MB\u001b[0m \u001b[31m55.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m23.7/23.7 MB\u001b[0m \u001b[31m74.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m823.6/823.6 kB\u001b[0m \u001b[31m48.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m731.7/731.7 MB\u001b[0m \u001b[31m1.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m121.6/121.6 MB\u001b[0m \u001b[31m3.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.5/56.5 MB\u001b[0m \u001b[31m3.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m124.2/124.2 MB\u001b[0m \u001b[31m6.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m196.0/196.0 MB\u001b[0m \u001b[31m9.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m166.0/166.0 MB\u001b[0m \u001b[31m11.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m99.1/99.1 kB\u001b[0m \u001b[31m7.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m167.9/167.9 MB\u001b[0m \u001b[31m10.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.9/6.9 MB\u001b[0m \u001b[31m20.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
       "\u001b[?25h\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\r\n",
       "bigframes 2.12.0 requires google-cloud-bigquery-storage<3.0.0,>=2.30.0, which is not installed.\r\n",
       "dopamine-rl 4.1.2 requires gymnasium>=1.0.0, but you have gymnasium 0.29.0 which is incompatible.\r\n",
@@ -141,19 +141,19 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "fb6e4ca7",
+   "id": "e6fdf7cd",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T08:50:53.218789Z",
-     "iopub.status.busy": "2026-02-09T08:50:53.217969Z",
-     "iopub.status.idle": "2026-02-09T08:50:53.223044Z",
-     "shell.execute_reply": "2026-02-09T08:50:53.222497Z"
+     "iopub.execute_input": "2026-02-09T12:17:39.923645Z",
+     "iopub.status.busy": "2026-02-09T12:17:39.923079Z",
+     "iopub.status.idle": "2026-02-09T12:17:39.928042Z",
+     "shell.execute_reply": "2026-02-09T12:17:39.927309Z"
     },
     "papermill": {
-     "duration": 0.038488,
-     "end_time": "2026-02-09T08:50:53.224153",
+     "duration": 0.040637,
+     "end_time": "2026-02-09T12:17:39.929183",
      "exception": false,
-     "start_time": "2026-02-09T08:50:53.185665",
+     "start_time": "2026-02-09T12:17:39.888546",
      "status": "completed"
     },
     "tags": []
@@ -174,19 +174,19 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "a183b390",
+   "id": "de6fbe4c",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T08:50:53.287133Z",
-     "iopub.status.busy": "2026-02-09T08:50:53.286552Z",
-     "iopub.status.idle": "2026-02-09T09:17:48.702059Z",
-     "shell.execute_reply": "2026-02-09T09:17:48.701040Z"
+     "iopub.execute_input": "2026-02-09T12:17:39.997963Z",
+     "iopub.status.busy": "2026-02-09T12:17:39.997398Z",
+     "iopub.status.idle": "2026-02-09T12:45:26.963768Z",
+     "shell.execute_reply": "2026-02-09T12:45:26.962881Z"
     },
     "papermill": {
-     "duration": 1615.448355,
-     "end_time": "2026-02-09T09:17:48.703515",
+     "duration": 1667.002033,
+     "end_time": "2026-02-09T12:45:26.965243",
      "exception": false,
-     "start_time": "2026-02-09T08:50:53.255160",
+     "start_time": "2026-02-09T12:17:39.963210",
      "status": "completed"
     },
     "tags": []
@@ -204,7 +204,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 7981/7981 [10:50<00:00, 12.28it/s]\n"
+      "100%|██████████| 7981/7981 [11:15<00:00, 11.81it/s]\n"
      ]
     },
     {
@@ -219,7 +219,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 7982/7982 [10:41<00:00, 12.44it/s]\n"
+      "100%|██████████| 7982/7982 [11:01<00:00, 12.06it/s]\n"
      ]
     },
     {
@@ -234,7 +234,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 997/997 [01:21<00:00, 12.28it/s]\n"
+      "100%|██████████| 997/997 [01:22<00:00, 12.06it/s]\n"
      ]
     },
     {
@@ -249,7 +249,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 997/997 [01:19<00:00, 12.55it/s]\n"
+      "100%|██████████| 997/997 [01:21<00:00, 12.21it/s]\n"
      ]
     },
     {
@@ -264,7 +264,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 999/999 [01:22<00:00, 12.12it/s]\n"
+      "100%|██████████| 999/999 [01:23<00:00, 12.00it/s]\n"
      ]
     },
     {
@@ -279,7 +279,7 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "100%|██████████| 999/999 [01:19<00:00, 12.52it/s]"
+      "100%|██████████| 999/999 [01:21<00:00, 12.31it/s]"
      ]
     },
     {
@@ -353,19 +353,19 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "9b9848a3",
+   "id": "ffd4d2db",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T09:17:49.552088Z",
-     "iopub.status.busy": "2026-02-09T09:17:49.551767Z",
-     "iopub.status.idle": "2026-02-09T09:17:49.560238Z",
-     "shell.execute_reply": "2026-02-09T09:17:49.559504Z"
+     "iopub.execute_input": "2026-02-09T12:45:27.836949Z",
+     "iopub.status.busy": "2026-02-09T12:45:27.836653Z",
+     "iopub.status.idle": "2026-02-09T12:45:27.845047Z",
+     "shell.execute_reply": "2026-02-09T12:45:27.844447Z"
     },
     "papermill": {
-     "duration": 0.4331,
-     "end_time": "2026-02-09T09:17:49.561380",
+     "duration": 0.456156,
+     "end_time": "2026-02-09T12:45:27.846138",
      "exception": false,
-     "start_time": "2026-02-09T09:17:49.128280",
+     "start_time": "2026-02-09T12:45:27.389982",
      "status": "completed"
     },
     "tags": []
@@ -424,19 +424,19 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "8786e211",
+   "id": "ba3995fe",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T09:17:50.498902Z",
-     "iopub.status.busy": "2026-02-09T09:17:50.498585Z",
-     "iopub.status.idle": "2026-02-09T09:17:50.513205Z",
-     "shell.execute_reply": "2026-02-09T09:17:50.512574Z"
+     "iopub.execute_input": "2026-02-09T12:45:28.773138Z",
+     "iopub.status.busy": "2026-02-09T12:45:28.772589Z",
+     "iopub.status.idle": "2026-02-09T12:45:28.787112Z",
+     "shell.execute_reply": "2026-02-09T12:45:28.786543Z"
     },
     "papermill": {
-     "duration": 0.530594,
-     "end_time": "2026-02-09T09:17:50.514375",
+     "duration": 0.432623,
+     "end_time": "2026-02-09T12:45:28.788171",
      "exception": false,
-     "start_time": "2026-02-09T09:17:49.983781",
+     "start_time": "2026-02-09T12:45:28.355548",
      "status": "completed"
     },
     "tags": []
@@ -447,7 +447,7 @@
     "    data_root,\n",
     "    pretrained_path=None,\n",
     "    use_fft=True,\n",
-    "    epochs=5,\n",
+    "    epochs=7,\n",
     "    batch_size=16,\n",
     "    lr=1e-5,\n",
     "    run_tag=\"run\"\n",
@@ -591,19 +591,19 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "0e5359ec",
+   "id": "b6b1a50c",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T09:17:51.355477Z",
-     "iopub.status.busy": "2026-02-09T09:17:51.355185Z",
-     "iopub.status.idle": "2026-02-09T09:17:51.360860Z",
-     "shell.execute_reply": "2026-02-09T09:17:51.360111Z"
+     "iopub.execute_input": "2026-02-09T12:45:29.710406Z",
+     "iopub.status.busy": "2026-02-09T12:45:29.709816Z",
+     "iopub.status.idle": "2026-02-09T12:45:29.715341Z",
+     "shell.execute_reply": "2026-02-09T12:45:29.714780Z"
     },
     "papermill": {
-     "duration": 0.427092,
-     "end_time": "2026-02-09T09:17:51.362120",
+     "duration": 0.511287,
+     "end_time": "2026-02-09T12:45:29.716414",
      "exception": false,
-     "start_time": "2026-02-09T09:17:50.935028",
+     "start_time": "2026-02-09T12:45:29.205127",
      "status": "completed"
     },
     "tags": []
@@ -629,98 +629,19 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "1a7e14d1",
+   "id": "775dddff",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-09T09:17:52.302147Z",
-     "iopub.status.busy": "2026-02-09T09:17:52.301831Z",
-     "iopub.status.idle": "2026-02-09T09:17:52.339729Z",
-     "shell.execute_reply": "2026-02-09T09:17:52.338918Z"
+     "iopub.execute_input": "2026-02-09T12:45:30.552350Z",
+     "iopub.status.busy": "2026-02-09T12:45:30.552062Z",
+     "iopub.status.idle": "2026-02-09T13:08:09.324929Z",
+     "shell.execute_reply": "2026-02-09T13:08:09.323979Z"
     },
     "papermill": {
-     "duration": 0.552245,
-     "end_time": "2026-02-09T09:17:52.340997",
+     "duration": 1359.196245,
+     "end_time": "2026-02-09T13:08:09.326314",
      "exception": false,
-     "start_time": "2026-02-09T09:17:51.788752",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "train real 7981\n",
-      "train fake 7976\n",
-      "val real 997\n",
-      "val fake 997\n",
-      "test real 999\n",
-      "test fake 998\n"
-     ]
-    }
-   ],
-   "source": [
-    "import glob\n",
-    "for p in [\"train\",\"val\",\"test\"]:\n",
-    "    for c in [\"real\",\"fake\"]:\n",
-    "        print(p, c, len(glob.glob(f\"/kaggle/working/cropped_png/{p}/{c}/*.png\")))\n"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 9,
-   "id": "02c736a8",
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2026-02-09T09:17:53.185360Z",
-     "iopub.status.busy": "2026-02-09T09:17:53.184437Z",
-     "iopub.status.idle": "2026-02-09T09:17:53.193692Z",
-     "shell.execute_reply": "2026-02-09T09:17:53.192894Z"
-    },
-    "papermill": {
-     "duration": 0.430127,
-     "end_time": "2026-02-09T09:17:53.194796",
-     "exception": false,
-     "start_time": "2026-02-09T09:17:52.764669",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "['val', 'test', 'train']\n",
-      "['fake', 'real']\n",
-      "['612_009.png', '739_002.png', '558_006.png', '650_002.png', '089_002.png']\n"
-     ]
-    }
-   ],
-   "source": [
-    "import os\n",
-    "print(os.listdir(\"/kaggle/working/cropped_png\"))\n",
-    "print(os.listdir(\"/kaggle/working/cropped_png/train\"))\n",
-    "print(os.listdir(\"/kaggle/working/cropped_png/train/real\")[:5])\n"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 10,
-   "id": "9cea8345",
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2026-02-09T09:17:54.142006Z",
-     "iopub.status.busy": "2026-02-09T09:17:54.141717Z",
-     "iopub.status.idle": "2026-02-09T09:37:16.528928Z",
-     "shell.execute_reply": "2026-02-09T09:37:16.527899Z"
-    },
-    "papermill": {
-     "duration": 1162.818696,
-     "end_time": "2026-02-09T09:37:16.531532",
-     "exception": false,
-     "start_time": "2026-02-09T09:17:53.712836",
+     "start_time": "2026-02-09T12:45:30.130069",
      "status": "completed"
     },
     "tags": []
@@ -731,7 +652,7 @@
      "output_type": "stream",
      "text": [
       "Downloading: \"https://download.pytorch.org/models/resnet50-0676ba61.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-0676ba61.pth\n",
-      "100%|██████████| 97.8M/97.8M [00:00<00:00, 229MB/s]\n"
+      "100%|██████████| 97.8M/97.8M [00:00<00:00, 192MB/s]\n"
      ]
     },
     {
@@ -746,104 +667,119 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 1/6: 100%|█████████████████████████████████████| 998/998 [03:03<00:00,  5.44it/s]\n"
+      "140k_to_FFPP Epoch 1/7: 100%|█████████████████████████████████████| 998/998 [03:04<00:00,  5.42it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 1: loss=0.9634 | AUROC=0.545 | F1=0.539 | EER=0.468 | ACC=0.526\n",
-      " New best 140k_to_FFPP: AUROC=0.545\n"
+      "140k_to_FFPP Epoch 1: loss=0.9644 | AUROC=0.541 | F1=0.528 | EER=0.477 | ACC=0.522\n",
+      " New best 140k_to_FFPP: AUROC=0.541\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 2/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.46it/s]\n"
+      "140k_to_FFPP Epoch 2/7: 100%|█████████████████████████████████████| 998/998 [03:03<00:00,  5.44it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 2: loss=0.6802 | AUROC=0.606 | F1=0.501 | EER=0.424 | ACC=0.568\n",
-      " New best 140k_to_FFPP: AUROC=0.606\n"
+      "140k_to_FFPP Epoch 2: loss=0.6799 | AUROC=0.607 | F1=0.547 | EER=0.424 | ACC=0.576\n",
+      " New best 140k_to_FFPP: AUROC=0.607\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 3/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.46it/s]\n"
+      "140k_to_FFPP Epoch 3/7: 100%|█████████████████████████████████████| 998/998 [03:03<00:00,  5.44it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 3: loss=0.6379 | AUROC=0.716 | F1=0.639 | EER=0.340 | ACC=0.662\n",
-      " New best 140k_to_FFPP: AUROC=0.716\n"
+      "140k_to_FFPP Epoch 3: loss=0.6386 | AUROC=0.705 | F1=0.590 | EER=0.352 | ACC=0.641\n",
+      " New best 140k_to_FFPP: AUROC=0.705\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 4/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.46it/s]\n"
+      "140k_to_FFPP Epoch 4/7: 100%|█████████████████████████████████████| 998/998 [03:03<00:00,  5.44it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 4: loss=0.5743 | AUROC=0.791 | F1=0.713 | EER=0.284 | ACC=0.716\n",
-      " New best 140k_to_FFPP: AUROC=0.791\n"
+      "140k_to_FFPP Epoch 4: loss=0.5777 | AUROC=0.785 | F1=0.719 | EER=0.286 | ACC=0.706\n",
+      " New best 140k_to_FFPP: AUROC=0.785\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 5/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.46it/s]\n"
+      "140k_to_FFPP Epoch 5/7: 100%|█████████████████████████████████████| 998/998 [03:03<00:00,  5.44it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 5: loss=0.5185 | AUROC=0.829 | F1=0.725 | EER=0.255 | ACC=0.742\n",
-      " New best 140k_to_FFPP: AUROC=0.829\n"
+      "140k_to_FFPP Epoch 5: loss=0.5156 | AUROC=0.827 | F1=0.745 | EER=0.254 | ACC=0.748\n",
+      " New best 140k_to_FFPP: AUROC=0.827\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 6/6: 100%|█████████████████████████████████████| 998/998 [03:02<00:00,  5.46it/s]\n"
+      "140k_to_FFPP Epoch 6/7: 100%|█████████████████████████████████████| 998/998 [03:03<00:00,  5.43it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k_to_FFPP Epoch 6: loss=0.4593 | AUROC=0.860 | F1=0.771 | EER=0.222 | ACC=0.775\n",
-      " New best 140k_to_FFPP: AUROC=0.860\n"
+      "140k_to_FFPP Epoch 6: loss=0.4693 | AUROC=0.859 | F1=0.774 | EER=0.227 | ACC=0.773\n",
+      " New best 140k_to_FFPP: AUROC=0.859\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "FFPP test: 100%|██████████████████████████████████████████████████| 125/125 [00:08<00:00, 15.03it/s]"
+      "140k_to_FFPP Epoch 7/7: 100%|█████████████████████████████████████| 998/998 [03:03<00:00,  5.43it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "FFPP test → AUROC=0.859 | F1=0.763 | EER=0.234 | ACC=0.772\n"
+      "140k_to_FFPP Epoch 7: loss=0.4189 | AUROC=0.879 | F1=0.794 | EER=0.206 | ACC=0.795\n",
+      " New best 140k_to_FFPP: AUROC=0.879\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "FFPP test: 100%|██████████████████████████████████████████████████| 125/125 [00:08<00:00, 15.01it/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "FFPP test → AUROC=0.874 | F1=0.783 | EER=0.214 | ACC=0.788\n"
      ]
     },
     {
@@ -862,7 +798,7 @@
     "    DATA_ROOT,\n",
     "    pretrained_path=PRETRAINED_140K,\n",
     "    use_fft=True,\n",
-    "    epochs=6,\n",
+    "    epochs=7,\n",
     "    lr=1e-5,\n",
     "    run_tag=\"140k_to_FFPP\"\n",
     ")\n",
@@ -917,14 +853,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 2938.396334,
-   "end_time": "2026-02-09T09:37:19.823395",
+   "duration": 3191.931801,
+   "end_time": "2026-02-09T13:08:12.502926",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2026-02-09T08:48:21.427061",
+   "start_time": "2026-02-09T12:15:00.571125",
    "version": "2.6.0"
   }
  },
