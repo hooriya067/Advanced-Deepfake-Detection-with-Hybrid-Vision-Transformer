@@ -1,0 +1,999 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "135cfbbf",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:54:12.376469Z",
+     "iopub.status.busy": "2026-02-11T16:54:12.376189Z",
+     "iopub.status.idle": "2026-02-11T16:54:22.212389Z",
+     "shell.execute_reply": "2026-02-11T16:54:22.211714Z"
+    },
+    "papermill": {
+     "duration": 9.842222,
+     "end_time": "2026-02-11T16:54:22.213874",
+     "exception": false,
+     "start_time": "2026-02-11T16:54:12.371652",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# ============================================\n",
+    "# Stage 3 – Dual-Token Fusion (RGB + FFT on Input)\n",
+    "# Full fine-tuning with DeepfakeBench metrics\n",
+    "# ============================================\n",
+    "\n",
+    "import os, random, torch, torch.nn as nn, torch.optim as optim\n",
+    "import numpy as np\n",
+    "from torchvision import datasets, transforms, models\n",
+    "from torch.utils.data import DataLoader\n",
+    "import torch.fft as fft\n",
+    "from tqdm import tqdm\n",
+    "from sklearn.metrics import roc_auc_score, f1_score, accuracy_score, roc_curve\n",
+    "from scipy.optimize import brentq\n",
+    "from scipy.interpolate import interp1d\n",
+    "from PIL import Image\n",
+    "from io import BytesIO\n",
+    "import warnings\n",
+    "import torch.nn.functional as F\n",
+    "warnings.filterwarnings(\"ignore\")\n",
+    "\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "128111b2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:54:22.220123Z",
+     "iopub.status.busy": "2026-02-11T16:54:22.219583Z",
+     "iopub.status.idle": "2026-02-11T16:54:22.224472Z",
+     "shell.execute_reply": "2026-02-11T16:54:22.223800Z"
+    },
+    "papermill": {
+     "duration": 0.008938,
+     "end_time": "2026-02-11T16:54:22.225612",
+     "exception": false,
+     "start_time": "2026-02-11T16:54:22.216674",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "class DualViewImageFolder(datasets.ImageFolder):\n",
+    "    \"\"\"\n",
+    "    Returns:\n",
+    "      x_rgb: normalized RGB tensor (for ResNet)\n",
+    "      x_raw: raw [0,1] tensor (for FFT)\n",
+    "      y: label\n",
+    "    \"\"\"\n",
+    "    def __init__(self, root, tfm_raw, tfm_rgb):\n",
+    "        super().__init__(root, transform=None)\n",
+    "        self.tfm_raw = tfm_raw\n",
+    "        self.tfm_rgb = tfm_rgb\n",
+    "\n",
+    "    def __getitem__(self, index):\n",
+    "        path, y = self.samples[index]\n",
+    "        img = self.loader(path)\n",
+    "\n",
+    "        x_raw = self.tfm_raw(img)\n",
+    "        x_rgb = self.tfm_rgb(img)\n",
+    "\n",
+    "        return x_rgb, x_raw, y\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "27f541ab",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:54:22.231148Z",
+     "iopub.status.busy": "2026-02-11T16:54:22.230698Z",
+     "iopub.status.idle": "2026-02-11T16:54:22.234812Z",
+     "shell.execute_reply": "2026-02-11T16:54:22.234234Z"
+    },
+    "papermill": {
+     "duration": 0.007952,
+     "end_time": "2026-02-11T16:54:22.235850",
+     "exception": false,
+     "start_time": "2026-02-11T16:54:22.227898",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# ---- DeepfakeBench metric helper ----\n",
+    "def calc_metrics(y_true, y_prob):\n",
+    "    y_pred = (y_prob > 0.5).astype(int)\n",
+    "    auc  = roc_auc_score(y_true, y_prob)\n",
+    "    f1   = f1_score(y_true, y_pred)\n",
+    "    acc  = accuracy_score(y_true, y_pred)\n",
+    "    fpr, tpr, _ = roc_curve(y_true, y_prob)\n",
+    "    eer  = brentq(lambda x: 1. - x - interp1d(fpr, tpr)(x), 0., 1.)\n",
+    "    return auc, f1, eer, acc"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "a54b7989",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:54:22.241134Z",
+     "iopub.status.busy": "2026-02-11T16:54:22.240945Z",
+     "iopub.status.idle": "2026-02-11T16:57:27.388117Z",
+     "shell.execute_reply": "2026-02-11T16:57:27.387114Z"
+    },
+    "papermill": {
+     "duration": 185.151697,
+     "end_time": "2026-02-11T16:57:27.389855",
+     "exception": false,
+     "start_time": "2026-02-11T16:54:22.238158",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.9/1.9 MB\u001b[0m \u001b[31m23.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m63.0/63.0 MB\u001b[0m \u001b[31m30.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m4.5/4.5 MB\u001b[0m \u001b[31m112.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m755.6/755.6 MB\u001b[0m \u001b[31m1.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m410.6/410.6 MB\u001b[0m \u001b[31m4.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m14.1/14.1 MB\u001b[0m \u001b[31m101.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m23.7/23.7 MB\u001b[0m \u001b[31m82.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m823.6/823.6 kB\u001b[0m \u001b[31m45.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m731.7/731.7 MB\u001b[0m \u001b[31m1.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m121.6/121.6 MB\u001b[0m \u001b[31m2.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.5/56.5 MB\u001b[0m \u001b[31m9.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m124.2/124.2 MB\u001b[0m \u001b[31m15.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m196.0/196.0 MB\u001b[0m \u001b[31m9.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m166.0/166.0 MB\u001b[0m \u001b[31m11.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m99.1/99.1 kB\u001b[0m \u001b[31m8.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m167.9/167.9 MB\u001b[0m \u001b[31m11.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.9/6.9 MB\u001b[0m \u001b[31m96.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25h\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\r\n",
+      "bigframes 2.12.0 requires google-cloud-bigquery-storage<3.0.0,>=2.30.0, which is not installed.\r\n",
+      "dopamine-rl 4.1.2 requires gymnasium>=1.0.0, but you have gymnasium 0.29.0 which is incompatible.\r\n",
+      "bigframes 2.12.0 requires google-cloud-bigquery[bqstorage,pandas]>=3.31.0, but you have google-cloud-bigquery 3.25.0 which is incompatible.\r\n",
+      "bigframes 2.12.0 requires rich<14,>=12.4.4, but you have rich 14.1.0 which is incompatible.\r\n",
+      "libcugraph-cu12 25.6.0 requires libraft-cu12==25.6.*, but you have libraft-cu12 25.2.0 which is incompatible.\r\n",
+      "torchaudio 2.6.0+cu124 requires torch==2.6.0, but you have torch 2.2.2 which is incompatible.\r\n",
+      "gradio 5.38.1 requires pydantic<2.12,>=2.0, but you have pydantic 2.12.0a1 which is incompatible.\r\n",
+      "plotnine 0.14.5 requires matplotlib>=3.8.0, but you have matplotlib 3.7.2 which is incompatible.\r\n",
+      "pylibcugraph-cu12 25.6.0 requires pylibraft-cu12==25.6.*, but you have pylibraft-cu12 25.2.0 which is incompatible.\r\n",
+      "pylibcugraph-cu12 25.6.0 requires rmm-cu12==25.6.*, but you have rmm-cu12 25.2.0 which is incompatible.\r\n",
+      "mlxtend 0.23.4 requires scikit-learn>=1.3.1, but you have scikit-learn 1.2.2 which is incompatible.\u001b[0m\u001b[31m\r\n",
+      "\u001b[0m"
+     ]
+    }
+   ],
+   "source": [
+    "\n",
+    "!pip -q install facenet-pytorch opencv-python"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "2665c590",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:57:27.526607Z",
+     "iopub.status.busy": "2026-02-11T16:57:27.526299Z",
+     "iopub.status.idle": "2026-02-11T16:57:27.531129Z",
+     "shell.execute_reply": "2026-02-11T16:57:27.530477Z"
+    },
+    "papermill": {
+     "duration": 0.072876,
+     "end_time": "2026-02-11T16:57:27.532319",
+     "exception": false,
+     "start_time": "2026-02-11T16:57:27.459443",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import os\n",
+    "\n",
+    "H_ROOT = \"/kaggle/input/140k-real-and-fake-faces/real_vs_fake/real-vs-fake\"\n",
+    "H_OUT  = \"/kaggle/working/140k_aligned224\"\n",
+    "\n",
+    "splits = [\"train\", \"valid\", \"test\"]   # your dataset uses \"valid\"\n",
+    "classes = [\"real\", \"fake\"]\n",
+    "\n",
+    "# for split in splits:\n",
+    "#     for cls in classes:\n",
+    "#         inp = f\"{H_ROOT}/{split}/{cls}\"\n",
+    "#         out = f\"{H_OUT}/{split}/{cls}\"\n",
+    "\n",
+    "#         if not os.path.isdir(inp):\n",
+    "#             print(\"Missing:\", inp)\n",
+    "#             continue\n",
+    "\n",
+    "#         process_folder(inp, out, out_size=224)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "a57b9803",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:57:27.667508Z",
+     "iopub.status.busy": "2026-02-11T16:57:27.666811Z",
+     "iopub.status.idle": "2026-02-11T16:57:27.671419Z",
+     "shell.execute_reply": "2026-02-11T16:57:27.670898Z"
+    },
+    "papermill": {
+     "duration": 0.072909,
+     "end_time": "2026-02-11T16:57:27.672540",
+     "exception": false,
+     "start_time": "2026-02-11T16:57:27.599631",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "class FFTMagnitude(nn.Module):\n",
+    "    def forward(self, x_raw):\n",
+    "        # x_raw: [B,3,H,W] in [0,1]\n",
+    "        f = torch.fft.fft2(x_raw)\n",
+    "        f = torch.fft.fftshift(f)\n",
+    "        mag = torch.abs(f)\n",
+    "        mag = torch.log1p(mag)\n",
+    "\n",
+    "        # per-image normalization (helps stability)\n",
+    "        mag = (mag - mag.mean(dim=(2,3), keepdim=True)) / (mag.std(dim=(2,3), keepdim=True) + 1e-6)\n",
+    "        return mag\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "8ec331ed",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:57:27.799207Z",
+     "iopub.status.busy": "2026-02-11T16:57:27.798589Z",
+     "iopub.status.idle": "2026-02-11T16:57:27.803518Z",
+     "shell.execute_reply": "2026-02-11T16:57:27.802863Z"
+    },
+    "papermill": {
+     "duration": 0.069651,
+     "end_time": "2026-02-11T16:57:27.804594",
+     "exception": false,
+     "start_time": "2026-02-11T16:57:27.734943",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# from facenet_pytorch import MTCNN\n",
+    "# from pathlib import Path\n",
+    "# from PIL import Image\n",
+    "# import numpy as np\n",
+    "# import cv2\n",
+    "# from tqdm import tqdm\n",
+    "# import torch\n",
+    "\n",
+    "# device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n",
+    "\n",
+    "# mtcnn = MTCNN(\n",
+    "#     keep_all=True,\n",
+    "#     device=device\n",
+    "# )\n",
+    "\n",
+    "# # 5-point template (ArcFace-style) for 112x112, we will scale later\n",
+    "# TEMPLATE_5PTS = np.array([\n",
+    "#     [38.2946, 51.6963],  # left eye\n",
+    "#     [73.5318, 51.5014],  # right eye\n",
+    "#     [56.0252, 71.7366],  # nose\n",
+    "#     [41.5493, 92.3655],  # left mouth\n",
+    "#     [70.7299, 92.2041],  # right mouth\n",
+    "# ], dtype=np.float32)\n",
+    "\n",
+    "# def estimate_similarity_transform(src_pts, out_size=224):\n",
+    "#     # Scale template from 112 base to out_size\n",
+    "#     scale = out_size / 112.0\n",
+    "#     dst_pts = TEMPLATE_5PTS * scale\n",
+    "\n",
+    "#     # OpenCV expects shape (N,1,2)\n",
+    "#     src = src_pts.reshape(-1,1,2).astype(np.float32)\n",
+    "#     dst = dst_pts.reshape(-1,1,2).astype(np.float32)\n",
+    "\n",
+    "#     M, _ = cv2.estimateAffinePartial2D(src, dst, method=cv2.LMEDS)\n",
+    "#     return M\n",
+    "\n",
+    "# def align_and_crop_pil(img_pil, landmarks, out_size=224):\n",
+    "#     \"\"\"\n",
+    "#     img_pil: PIL RGB\n",
+    "#     landmarks: (5,2) in original image coords\n",
+    "#     returns: aligned PIL RGB of size out_size x out_size\n",
+    "#     \"\"\"\n",
+    "#     img = np.array(img_pil)  # HWC RGB uint8\n",
+    "\n",
+    "#     M = estimate_similarity_transform(landmarks, out_size=out_size)\n",
+    "#     if M is None:\n",
+    "#         return None\n",
+    "\n",
+    "#     aligned = cv2.warpAffine(\n",
+    "#         img, M, (out_size, out_size),\n",
+    "#         flags=cv2.INTER_LINEAR,\n",
+    "#         borderMode=cv2.BORDER_CONSTANT,\n",
+    "#         borderValue=(0,0,0)\n",
+    "#     )\n",
+    "\n",
+    "#     return Image.fromarray(aligned)\n",
+    "\n",
+    "# def process_folder(in_root, out_root, exts=(\"jpg\",\"jpeg\",\"png\"), out_size=224):\n",
+    "#     in_root = Path(in_root)\n",
+    "#     out_root = Path(out_root)\n",
+    "#     out_root.mkdir(parents=True, exist_ok=True)\n",
+    "\n",
+    "#     files = []\n",
+    "#     for e in exts:\n",
+    "#         files += list(in_root.rglob(f\"*.{e}\"))\n",
+    "\n",
+    "#     kept = 0\n",
+    "#     missed = 0\n",
+    "\n",
+    "#     for fp in tqdm(files, desc=f\"Processing {in_root.name}\"):\n",
+    "#         try:\n",
+    "#             img = Image.open(fp).convert(\"RGB\")\n",
+    "#         except:\n",
+    "#             missed += 1\n",
+    "#             continue\n",
+    "\n",
+    "#         boxes, probs, lms = mtcnn.detect(img, landmarks=True)\n",
+    "\n",
+    "#         if lms is None or len(lms) == 0:\n",
+    "#             missed += 1\n",
+    "#             continue\n",
+    "\n",
+    "#         # choose highest confidence face\n",
+    "#         if probs is None:\n",
+    "#             idx = 0\n",
+    "#         else:\n",
+    "#             idx = int(np.argmax(probs))\n",
+    "\n",
+    "#         landmarks = lms[idx].astype(np.float32)  # (5,2)\n",
+    "\n",
+    "#         aligned = align_and_crop_pil(img, landmarks, out_size=out_size)\n",
+    "#         if aligned is None:\n",
+    "#             missed += 1\n",
+    "#             continue\n",
+    "\n",
+    "#         # preserve filename, save png\n",
+    "#         out_path = out_root / (fp.stem + \".png\")\n",
+    "#         aligned.save(out_path)\n",
+    "#         kept += 1\n",
+    "\n",
+    "#     print(f\"Saved: {kept}, Missed: {missed}\")\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "fd0f8100",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:57:28.010003Z",
+     "iopub.status.busy": "2026-02-11T16:57:28.009422Z",
+     "iopub.status.idle": "2026-02-11T16:57:28.019468Z",
+     "shell.execute_reply": "2026-02-11T16:57:28.018911Z"
+    },
+    "papermill": {
+     "duration": 0.153016,
+     "end_time": "2026-02-11T16:57:28.020456",
+     "exception": false,
+     "start_time": "2026-02-11T16:57:27.867440",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "class Stage3Hybrid(nn.Module):\n",
+    "    def __init__(self, embed_dim=512, num_heads=8, num_layers=4, use_fft=True, grid=10):\n",
+    "        super().__init__()\n",
+    "        self.use_fft = use_fft\n",
+    "        self.grid = grid\n",
+    "\n",
+    "        # backbone\n",
+    "        resnet = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)\n",
+    "        self.resnet = nn.Sequential(*list(resnet.children())[:-2])  # conv5 output\n",
+    "\n",
+    "        # projections\n",
+    "        self.proj_rgb = nn.Conv2d(2048, embed_dim, 1)\n",
+    "        self.proj_fft = nn.Conv2d(3, embed_dim, 1)\n",
+    "\n",
+    "        self.fft_layer = FFTMagnitude()\n",
+    "\n",
+    "        # ---- Cross-Modality Fusion (RGB attends to FFT) ----\n",
+    "        self.cross_attn = nn.MultiheadAttention(embed_dim, num_heads, batch_first=True)\n",
+    "\n",
+    "        # ---- Transformer encoder ----\n",
+    "        enc_layer = nn.TransformerEncoderLayer(\n",
+    "            d_model=embed_dim,\n",
+    "            nhead=num_heads,\n",
+    "            dim_feedforward=embed_dim * 4,\n",
+    "            batch_first=True,\n",
+    "            norm_first=True\n",
+    "        )\n",
+    "        self.transformer = nn.TransformerEncoder(enc_layer, num_layers=num_layers)\n",
+    "\n",
+    "        # ---- tokens ----\n",
+    "        self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))\n",
+    "        self.type_embed = nn.Parameter(torch.randn(1, 2, embed_dim))  # 0=RGB, 1=FFT\n",
+    "\n",
+    "        # positions: 1 CLS + 2*(grid*grid)\n",
+    "        num_tokens = 1 + 2 * (grid * grid)\n",
+    "        self.pos_embed = nn.Parameter(torch.randn(1, num_tokens, embed_dim))\n",
+    "\n",
+    "        # classifier\n",
+    "        self.cls_head = nn.Sequential(\n",
+    "            nn.LayerNorm(embed_dim),\n",
+    "            nn.Linear(embed_dim, 2)\n",
+    "        )\n",
+    "\n",
+    "    def forward(self, x_rgb, x_raw):\n",
+    "        B = x_rgb.size(0)\n",
+    "\n",
+    "        # ---- RGB tokens ----\n",
+    "        rgb_feat = self.resnet(x_rgb)                       # [B,2048,H',W'] (usually 7x7)\n",
+    "        rgb_map = self.proj_rgb(rgb_feat)                   # [B,E,H',W']\n",
+    "        rgb_map = F.adaptive_avg_pool2d(rgb_map, (self.grid, self.grid))\n",
+    "        rgb_tok = rgb_map.flatten(2).transpose(1, 2)        # [B, G^2, E]\n",
+    "\n",
+    "        # ---- FFT tokens ----\n",
+    "        if self.use_fft:\n",
+    "            fft_img = self.fft_layer(x_raw)                 # [B,3,H,W]\n",
+    "            fft_map = self.proj_fft(fft_img)                # [B,E,H,W]\n",
+    "            fft_map = F.adaptive_avg_pool2d(fft_map, (self.grid, self.grid))\n",
+    "            fft_tok = fft_map.flatten(2).transpose(1, 2)    # [B, G^2, E]\n",
+    "        else:\n",
+    "            fft_tok = torch.zeros_like(rgb_tok)\n",
+    "\n",
+    "        # ---- Modality embeddings ----\n",
+    "        rgb_tok = rgb_tok + self.type_embed[:, 0:1, :]\n",
+    "        fft_tok = fft_tok + self.type_embed[:, 1:2, :]\n",
+    "\n",
+    "        # ---- Cross-modality fusion: RGB attends to FFT ----\n",
+    "        # query=rgb, key/value=fft\n",
+    "        fused_rgb, _ = self.cross_attn(query=rgb_tok, key=fft_tok, value=fft_tok)\n",
+    "        rgb_tok = rgb_tok + fused_rgb\n",
+    "\n",
+    "        # ---- Build full token sequence ----\n",
+    "        cls = self.cls_token.repeat(B, 1, 1)\n",
+    "        tokens = torch.cat([cls, rgb_tok, fft_tok], dim=1)  # [B, 1+2*G^2, E]\n",
+    "        tokens = tokens + self.pos_embed[:, :tokens.size(1), :]\n",
+    "\n",
+    "        out = self.transformer(tokens)\n",
+    "        cls_out = out[:, 0]                                 # CLS only\n",
+    "        return self.cls_head(cls_out)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "686364a7",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:57:28.145742Z",
+     "iopub.status.busy": "2026-02-11T16:57:28.145424Z",
+     "iopub.status.idle": "2026-02-11T16:57:28.157258Z",
+     "shell.execute_reply": "2026-02-11T16:57:28.156684Z"
+    },
+    "papermill": {
+     "duration": 0.075261,
+     "end_time": "2026-02-11T16:57:28.158269",
+     "exception": false,
+     "start_time": "2026-02-11T16:57:28.083008",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "def train_stage3():\n",
+    "    device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n",
+    "    model = Stage3Hybrid().to(device)\n",
+    "\n",
+    "    # ---- JPEG degradation augment ----\n",
+    "    # def random_jpeg(img):\n",
+    "    #     buf = BytesIO()\n",
+    "    #     img.save(buf, format=\"JPEG\", quality=random.randint(40, 90))\n",
+    "    #     buf.seek(0)\n",
+    "    #     return Image.open(buf).convert(\"RGB\")\n",
+    "            \n",
+    "\n",
+    "  # -------- Transforms --------\n",
+    "    tfm_raw_train = transforms.Compose([\n",
+    "        transforms.Resize((224,224)),\n",
+    "        transforms.ToTensor(),   # NO Normalize (for FFT)\n",
+    "    ])\n",
+    "    \n",
+    "    tfm_rgb_train = transforms.Compose([\n",
+    "        transforms.Resize((224,224)),\n",
+    "        transforms.RandomHorizontalFlip(),\n",
+    "        transforms.ColorJitter(0.2, 0.2, 0.1, 0.05),\n",
+    "        transforms.ToTensor(),\n",
+    "        transforms.Normalize([0.485,0.456,0.406],\n",
+    "                             [0.229,0.224,0.225]),\n",
+    "    ])\n",
+    "    \n",
+    "    tfm_raw_eval = transforms.Compose([\n",
+    "        transforms.Resize((224,224)),\n",
+    "        transforms.ToTensor(),\n",
+    "    ])\n",
+    "    \n",
+    "    tfm_rgb_eval = transforms.Compose([\n",
+    "        transforms.Resize((224,224)),\n",
+    "        transforms.ToTensor(),\n",
+    "        transforms.Normalize([0.485,0.456,0.406],\n",
+    "                             [0.229,0.224,0.225]),\n",
+    "    ])\n",
+    "    \n",
+    "\n",
+    "    # ---- Dataset ---- \n",
+    "    trainset = DualViewImageFolder(\n",
+    "        \"/kaggle/input/datasets/hooriyamasood/140k-aligned-faces-v1/140k_aligned224/train\",\n",
+    "        tfm_raw=tfm_raw_train,\n",
+    "        tfm_rgb=tfm_rgb_train\n",
+    "    )\n",
+    "    \n",
+    "    valset = DualViewImageFolder(\n",
+    "        \"/kaggle/input/datasets/hooriyamasood/140k-aligned-faces-v1/140k_aligned224/valid\",\n",
+    "        tfm_raw=tfm_raw_eval,\n",
+    "        tfm_rgb=tfm_rgb_eval\n",
+    "    )\n",
+    "    \n",
+    "    testset = DualViewImageFolder(\n",
+    "        \"/kaggle/input/datasets/hooriyamasood/140k-aligned-faces-v1/140k_aligned224/test\",\n",
+    "        tfm_raw=tfm_raw_eval,\n",
+    "        tfm_rgb=tfm_rgb_eval\n",
+    "    )\n",
+    "\n",
+    "\n",
+    "\n",
+    "    trainloader = DataLoader(trainset, batch_size=16, shuffle=True, num_workers=0)\n",
+    "    valloader   = DataLoader(valset, batch_size=16, shuffle=False, num_workers=2)\n",
+    "    testloader = DataLoader(testset, batch_size=16, shuffle=False, num_workers=2)\n",
+    "\n",
+    "   \n",
+    "    print(\"class_to_idx:\", trainset.class_to_idx)\n",
+    "    real_idx = trainset.class_to_idx[\"real\"]\n",
+    "\n",
+    "\n",
+    "    # ---- Optimiser / loss / scaler ----\n",
+    "    opt = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)\n",
+    "    criterion = nn.CrossEntropyLoss()\n",
+    "    epochs, best_auc = 10, 0\n",
+    "\n",
+    "    use_cuda = torch.cuda.is_available()\n",
+    "    scaler = torch.amp.GradScaler(enabled=use_cuda)\n",
+    "    \n",
+    "    for epoch in range(epochs):\n",
+    "        model.train()\n",
+    "        running_loss = 0.0\n",
+    "    \n",
+    "        for x_rgb, x_raw, lbls in tqdm(trainloader, desc=f\"Epoch {epoch+1}/{epochs}\", ncols=100):\n",
+    "            x_rgb = x_rgb.to(device, non_blocking=True)\n",
+    "            x_raw = x_raw.to(device, non_blocking=True)\n",
+    "            lbls  = lbls.to(device, non_blocking=True)\n",
+    "    \n",
+    "            opt.zero_grad(set_to_none=True)\n",
+    "    \n",
+    "            with torch.amp.autocast(device_type=\"cuda\", enabled=use_cuda):\n",
+    "                logits = model(x_rgb, x_raw)\n",
+    "                loss = criterion(logits, lbls)\n",
+    "    \n",
+    "            scaler.scale(loss).backward()\n",
+    "            scaler.step(opt)\n",
+    "            scaler.update()\n",
+    "    \n",
+    "            running_loss += loss.item()\n",
+    "\n",
+    "\n",
+    "        # ---- Validation ----\n",
+    "        model.eval()\n",
+    "        y_true, y_prob = [], []\n",
+    "        \n",
+    "        with torch.no_grad():\n",
+    "            for x_rgb, x_raw, lbls in valloader:\n",
+    "                x_rgb = x_rgb.to(device, non_blocking=True)\n",
+    "                x_raw = x_raw.to(device, non_blocking=True)\n",
+    "        \n",
+    "                probs = torch.softmax(model(x_rgb, x_raw), dim=1)[:, real_idx].cpu().numpy()\n",
+    "        \n",
+    "                y_true.extend(lbls.numpy())\n",
+    "                y_prob.extend(probs)\n",
+    "\n",
+    "        \n",
+    "\n",
+    "        auc, f1, eer, acc = calc_metrics(np.array(y_true), np.array(y_prob))\n",
+    "        print(f\"Epoch {epoch+1}: loss={running_loss/len(trainloader):.4f} | \"\n",
+    "              f\"AUROC={auc:.3f} | F1={f1:.3f} | EER={eer:.3f} | ACC={acc:.3f}\")\n",
+    "\n",
+    "        ckpt_path = f\"/kaggle/working/stage3_epoch{epoch+1}.pth\"\n",
+    "        torch.save(model.state_dict(), ckpt_path)\n",
+    "        if auc > best_auc:\n",
+    "            best_auc = auc\n",
+    "            torch.save(model.state_dict(), \"/kaggle/working/best_auc_stage3.pth\")\n",
+    "            print(f\"★ New best AUC {best_auc:.3f} (ACC={acc:.3f})\")\n",
+    "\n",
+    "    print(\"\\nTraining complete!\")\n",
+    "    print(f\"Best model achieved: AUROC={best_auc:.3f}\")\n",
+    "    return model, testloader, real_idx\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "c8c30f8b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:57:28.282441Z",
+     "iopub.status.busy": "2026-02-11T16:57:28.282201Z",
+     "iopub.status.idle": "2026-02-11T16:57:28.287809Z",
+     "shell.execute_reply": "2026-02-11T16:57:28.287092Z"
+    },
+    "papermill": {
+     "duration": 0.069126,
+     "end_time": "2026-02-11T16:57:28.289032",
+     "exception": false,
+     "start_time": "2026-02-11T16:57:28.219906",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "def evaluate(model, loader, real_idx, tag=\"TEST\"):\n",
+    "    device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n",
+    "    model.eval()\n",
+    "    y_true, y_prob = [], []\n",
+    "\n",
+    "    with torch.no_grad():\n",
+    "        for x_rgb, x_raw, lbls in tqdm(loader, desc=tag, ncols=100):\n",
+    "            x_rgb = x_rgb.to(device, non_blocking=True)\n",
+    "            x_raw = x_raw.to(device, non_blocking=True)\n",
+    "\n",
+    "            probs = torch.softmax(model(x_rgb, x_raw), dim=1)[:, real_idx].cpu().numpy()\n",
+    "\n",
+    "            y_true.extend(lbls.numpy())\n",
+    "            y_prob.extend(probs)\n",
+    "\n",
+    "    auc, f1, eer, acc = calc_metrics(np.array(y_true), np.array(y_prob))\n",
+    "    print(f\"{tag} → AUROC={auc:.3f} | F1={f1:.3f} | EER={eer:.3f} | ACC={acc:.3f}\")\n",
+    "    return auc, f1, eer, acc\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "c30b7eca",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T16:57:28.415556Z",
+     "iopub.status.busy": "2026-02-11T16:57:28.414982Z",
+     "iopub.status.idle": "2026-02-11T23:54:42.404075Z",
+     "shell.execute_reply": "2026-02-11T23:54:42.403167Z"
+    },
+    "papermill": {
+     "duration": 25035.938049,
+     "end_time": "2026-02-11T23:54:44.290450",
+     "exception": false,
+     "start_time": "2026-02-11T16:57:28.352401",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Downloading: \"https://download.pytorch.org/models/resnet50-0676ba61.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-0676ba61.pth\n",
+      "100%|██████████| 97.8M/97.8M [00:00<00:00, 208MB/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "class_to_idx: {'fake': 0, 'real': 1}\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 1/10: 100%|███████████████████████████████████████████████| 6250/6250 [42:28<00:00,  2.45it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 1: loss=0.1140 | AUROC=0.999 | F1=0.949 | EER=0.018 | ACC=0.951\n",
+      "★ New best AUC 0.999 (ACC=0.951)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 2/10: 100%|███████████████████████████████████████████████| 6250/6250 [38:54<00:00,  2.68it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 2: loss=0.0492 | AUROC=1.000 | F1=0.991 | EER=0.009 | ACC=0.991\n",
+      "★ New best AUC 1.000 (ACC=0.991)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 3/10: 100%|███████████████████████████████████████████████| 6250/6250 [39:16<00:00,  2.65it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 3: loss=0.0360 | AUROC=1.000 | F1=0.994 | EER=0.006 | ACC=0.994\n",
+      "★ New best AUC 1.000 (ACC=0.994)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 4/10: 100%|███████████████████████████████████████████████| 6250/6250 [39:16<00:00,  2.65it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 4: loss=0.0294 | AUROC=0.999 | F1=0.989 | EER=0.011 | ACC=0.989\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 5/10: 100%|███████████████████████████████████████████████| 6250/6250 [39:56<00:00,  2.61it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 5: loss=0.0244 | AUROC=0.999 | F1=0.985 | EER=0.015 | ACC=0.985\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 6/10: 100%|███████████████████████████████████████████████| 6250/6250 [39:34<00:00,  2.63it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 6: loss=0.0222 | AUROC=1.000 | F1=0.987 | EER=0.005 | ACC=0.986\n",
+      "★ New best AUC 1.000 (ACC=0.986)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 7/10: 100%|███████████████████████████████████████████████| 6250/6250 [39:42<00:00,  2.62it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 7: loss=0.0199 | AUROC=1.000 | F1=0.981 | EER=0.008 | ACC=0.981\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 8/10: 100%|███████████████████████████████████████████████| 6250/6250 [39:40<00:00,  2.63it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 8: loss=0.0197 | AUROC=1.000 | F1=0.993 | EER=0.006 | ACC=0.993\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 9/10: 100%|███████████████████████████████████████████████| 6250/6250 [39:16<00:00,  2.65it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 9: loss=0.0182 | AUROC=1.000 | F1=0.991 | EER=0.006 | ACC=0.991\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Epoch 10/10: 100%|██████████████████████████████████████████████| 6250/6250 [39:10<00:00,  2.66it/s]\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 10: loss=0.0163 | AUROC=1.000 | F1=0.992 | EER=0.006 | ACC=0.992\n",
+      "\n",
+      "Training complete!\n",
+      "Best model achieved: AUROC=1.000\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "140k TEST: 100%|████████████████████████████████████████████████| 1250/1250 [01:43<00:00, 12.06it/s]"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "140k TEST → AUROC=1.000 | F1=0.987 | EER=0.005 | ACC=0.987\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "if __name__ == \"__main__\":\n",
+    "    model, testloader, real_idx = train_stage3()\n",
+    "\n",
+    "    # Load best validation model before testing\n",
+    "    model.load_state_dict(torch.load(\"/kaggle/working/best_auc_stage3.pth\"))\n",
+    "\n",
+    "    evaluate(model, testloader, real_idx, tag=\"140k TEST\")\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "6bc321eb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-02-11T23:54:49.980695Z",
+     "iopub.status.busy": "2026-02-11T23:54:49.980354Z",
+     "iopub.status.idle": "2026-02-11T23:54:49.985452Z",
+     "shell.execute_reply": "2026-02-11T23:54:49.984711Z"
+    },
+    "papermill": {
+     "duration": 2.913882,
+     "end_time": "2026-02-11T23:54:49.986598",
+     "exception": false,
+     "start_time": "2026-02-11T23:54:47.072716",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['140k-real-and-fake-faces', 'datasets']\n"
+     ]
+    }
+   ],
+   "source": [
+    "import os\n",
+    "print(os.listdir(\"/kaggle/input\"))\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "gpu",
+   "dataSources": [
+    {
+     "datasetId": 501529,
+     "sourceId": 939937,
+     "sourceType": "datasetVersion"
+    },
+    {
+     "datasetId": 9469735,
+     "sourceId": 14809198,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 31154,
+   "isGpuEnabled": true,
+   "isInternetEnabled": true,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 25246.429699,
+   "end_time": "2026-02-11T23:54:55.303010",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2026-02-11T16:54:08.873311",
+   "version": "2.6.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
