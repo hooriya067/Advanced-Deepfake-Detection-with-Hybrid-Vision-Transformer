@@ -3,21 +3,21 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "78e29164",
+   "id": "1feacbf7",
    "metadata": {
     "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
     "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
     "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:12.780190Z",
-     "iopub.status.busy": "2026-02-25T08:50:12.779939Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.835526Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.834884Z"
+     "iopub.execute_input": "2026-03-03T16:32:27.061058Z",
+     "iopub.status.busy": "2026-03-03T16:32:27.060567Z",
+     "iopub.status.idle": "2026-03-03T16:32:41.006973Z",
+     "shell.execute_reply": "2026-03-03T16:32:41.006364Z"
     },
     "papermill": {
-     "duration": 14.061104,
-     "end_time": "2026-02-25T08:50:26.836923",
+     "duration": 13.951381,
+     "end_time": "2026-03-03T16:32:41.008455",
      "exception": false,
-     "start_time": "2026-02-25T08:50:12.775819",
+     "start_time": "2026-03-03T16:32:27.057074",
      "status": "completed"
     },
     "tags": []
@@ -51,63 +51,82 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "3c61e365",
+   "id": "57b9a3de",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.844158Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.843317Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.848572Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.847759Z"
+     "iopub.execute_input": "2026-03-03T16:32:41.015544Z",
+     "iopub.status.busy": "2026-03-03T16:32:41.015211Z",
+     "iopub.status.idle": "2026-03-03T16:32:41.022764Z",
+     "shell.execute_reply": "2026-03-03T16:32:41.022054Z"
     },
     "papermill": {
-     "duration": 0.009325,
-     "end_time": "2026-02-25T08:50:26.849707",
+     "duration": 0.011819,
+     "end_time": "2026-03-03T16:32:41.023948",
      "exception": false,
-     "start_time": "2026-02-25T08:50:26.840382",
+     "start_time": "2026-03-03T16:32:41.012129",
      "status": "completed"
     },
     "tags": []
    },
    "outputs": [],
    "source": [
+    "import torchvision.transforms.functional as TF\n",
+    "\n",
     "class DualViewImageFolder(datasets.ImageFolder):\n",
-    "    \"\"\"\n",
-    "    Returns:\n",
-    "      x_rgb: normalized RGB tensor (for ResNet)\n",
-    "      x_raw: raw [0,1] tensor (for FFT)\n",
-    "      y: label\n",
-    "    \"\"\"\n",
-    "    def __init__(self, root, tfm_raw, tfm_rgb):\n",
+    "    def __init__(self, root, p_flip=0.5, jpeg_aug=None,\n",
+    "                 rgb_color_aug=None, rgb_norm=None):\n",
     "        super().__init__(root, transform=None)\n",
-    "        self.tfm_raw = tfm_raw\n",
-    "        self.tfm_rgb = tfm_rgb\n",
+    "        self.p_flip = p_flip\n",
+    "        self.jpeg_aug = jpeg_aug\n",
+    "        self.rgb_color_aug = rgb_color_aug\n",
+    "        self.rgb_norm = rgb_norm\n",
     "\n",
     "    def __getitem__(self, index):\n",
     "        path, y = self.samples[index]\n",
-    "        img = self.loader(path)\n",
+    "        img = self.loader(path).convert(\"RGB\")\n",
     "\n",
-    "        x_raw = self.tfm_raw(img)\n",
-    "        x_rgb = self.tfm_rgb(img)\n",
+    "        # ---- shared geometry ----\n",
+    "        img = TF.resize(img, (224, 224))\n",
+    "        if random.random() < self.p_flip:\n",
+    "            img = TF.hflip(img)\n",
     "\n",
-    "        return x_rgb, x_raw, y\n"
+    "        # ---- shared JPEG (optional but recommended) ----\n",
+    "        if self.jpeg_aug is not None:\n",
+    "            img_jpeg = self.jpeg_aug(img)\n",
+    "        else:\n",
+    "            img_jpeg = img\n",
+    "\n",
+    "        # ---- RAW view (for FFT): no normalize ----\n",
+    "        x_raw = TF.to_tensor(img_jpeg)  # [0,1]\n",
+    "\n",
+    "        # ---- RGB view: color aug + normalize ----\n",
+    "        img_rgb = img_jpeg\n",
+    "        if self.rgb_color_aug is not None:\n",
+    "            img_rgb = self.rgb_color_aug(img_rgb)\n",
+    "\n",
+    "        x_rgb = TF.to_tensor(img_rgb)\n",
+    "        if self.rgb_norm is not None:\n",
+    "            x_rgb = self.rgb_norm(x_rgb)\n",
+    "\n",
+    "        return x_rgb, x_raw, y"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "47513201",
+   "id": "5e752020",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.855557Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.854976Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.859037Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.858509Z"
+     "iopub.execute_input": "2026-03-03T16:32:41.029364Z",
+     "iopub.status.busy": "2026-03-03T16:32:41.028943Z",
+     "iopub.status.idle": "2026-03-03T16:32:41.033005Z",
+     "shell.execute_reply": "2026-03-03T16:32:41.032434Z"
     },
     "papermill": {
-     "duration": 0.007993,
-     "end_time": "2026-02-25T08:50:26.860084",
+     "duration": 0.007844,
+     "end_time": "2026-03-03T16:32:41.034053",
      "exception": false,
-     "start_time": "2026-02-25T08:50:26.852091",
+     "start_time": "2026-03-03T16:32:41.026209",
      "status": "completed"
     },
     "tags": []
@@ -128,19 +147,19 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "ed858ad0",
+   "id": "d63bfe81",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.865499Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.865275Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.869971Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.869422Z"
+     "iopub.execute_input": "2026-03-03T16:32:41.038964Z",
+     "iopub.status.busy": "2026-03-03T16:32:41.038726Z",
+     "iopub.status.idle": "2026-03-03T16:32:41.043266Z",
+     "shell.execute_reply": "2026-03-03T16:32:41.042711Z"
     },
     "papermill": {
-     "duration": 0.008546,
-     "end_time": "2026-02-25T08:50:26.870984",
+     "duration": 0.008077,
+     "end_time": "2026-03-03T16:32:41.044205",
      "exception": false,
-     "start_time": "2026-02-25T08:50:26.862438",
+     "start_time": "2026-03-03T16:32:41.036128",
      "status": "completed"
     },
     "tags": []
@@ -170,45 +189,19 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "bdc55f23",
+   "id": "a96de1b4",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.876059Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.875858Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.878883Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.878207Z"
+     "iopub.execute_input": "2026-03-03T16:32:41.049151Z",
+     "iopub.status.busy": "2026-03-03T16:32:41.048773Z",
+     "iopub.status.idle": "2026-03-03T16:32:41.052115Z",
+     "shell.execute_reply": "2026-03-03T16:32:41.051574Z"
     },
     "papermill": {
-     "duration": 0.006792,
-     "end_time": "2026-02-25T08:50:26.879974",
+     "duration": 0.006825,
+     "end_time": "2026-03-03T16:32:41.053091",
      "exception": false,
-     "start_time": "2026-02-25T08:50:26.873182",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [],
-   "source": [
-    "\n",
-    "# !pip -q install facenet-pytorch opencv-python"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 6,
-   "id": "980d7a29",
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.885071Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.884876Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.888210Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.887666Z"
-    },
-    "papermill": {
-     "duration": 0.007077,
-     "end_time": "2026-02-25T08:50:26.889255",
-     "exception": false,
-     "start_time": "2026-02-25T08:50:26.882178",
+     "start_time": "2026-03-03T16:32:41.046266",
      "status": "completed"
     },
     "tags": []
@@ -222,198 +215,87 @@
     "\n",
     "splits = [\"train\", \"valid\", \"test\"]   # your dataset uses \"valid\"\n",
     "classes = [\"real\", \"fake\"]\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "394e432a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-03T16:32:41.058276Z",
+     "iopub.status.busy": "2026-03-03T16:32:41.057671Z",
+     "iopub.status.idle": "2026-03-03T16:32:41.064763Z",
+     "shell.execute_reply": "2026-03-03T16:32:41.064094Z"
+    },
+    "papermill": {
+     "duration": 0.010728,
+     "end_time": "2026-03-03T16:32:41.065829",
+     "exception": false,
+     "start_time": "2026-03-03T16:32:41.055101",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "class GlobalFilter(nn.Module):\n",
+    "    \"\"\"\n",
+    "    Learnable complex filter applied in frequency domain.\n",
+    "    Expects fixed H,W feature map size (e.g., 28x28).\n",
+    "    \"\"\"\n",
+    "    def __init__(self, dim, h, w, fp32fft=True):\n",
+    "        super().__init__()\n",
+    "        self.h = h\n",
+    "        self.w = w\n",
+    "        self.fp32fft = fp32fft\n",
     "\n",
-    "# for split in splits:\n",
-    "#     for cls in classes:\n",
-    "#         inp = f\"{H_ROOT}/{split}/{cls}\"\n",
-    "#         out = f\"{H_OUT}/{split}/{cls}\"\n",
+    "        # rfft2 width is (w//2 + 1)\n",
+    "        self.complex_weight = nn.Parameter(\n",
+    "            torch.randn(h, w // 2 + 1, dim, 2, dtype=torch.float32) * 0.02\n",
+    "        )\n",
     "\n",
-    "#         if not os.path.isdir(inp):\n",
-    "#             print(\"Missing:\", inp)\n",
-    "#             continue\n",
+    "    def forward(self, x):\n",
+    "        # x: [B,C,H,W] where H,W match self.h,self.w\n",
+    "        B, C, H, W = x.shape\n",
+    "        assert H == self.h and W == self.w, f\"Expected {self.h}x{self.w}, got {H}x{W}\"\n",
     "\n",
-    "#         process_folder(inp, out, out_size=224)\n"
+    "        x = x.permute(0, 2, 3, 1).contiguous()  # [B,H,W,C]\n",
+    "\n",
+    "        if self.fp32fft:\n",
+    "            orig_dtype = x.dtype\n",
+    "            x = x.float()\n",
+    "\n",
+    "        x_f = torch.fft.rfft2(x, dim=(1, 2), norm=\"ortho\")  # [B,H,W//2+1,C]\n",
+    "        w = torch.view_as_complex(self.complex_weight)      # [H,W//2+1,C]\n",
+    "        x_f = x_f * w\n",
+    "\n",
+    "        x = torch.fft.irfft2(x_f, s=(H, W), dim=(1, 2), norm=\"ortho\")  # [B,H,W,C]\n",
+    "\n",
+    "        if self.fp32fft:\n",
+    "            x = x.to(orig_dtype)\n",
+    "\n",
+    "        x = x.permute(0, 3, 1, 2).contiguous()  # [B,C,H,W]\n",
+    "        return x"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "03fe01dd",
+   "id": "0c438b84",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.894874Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.894374Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.898377Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.897864Z"
+     "iopub.execute_input": "2026-03-03T16:32:41.070966Z",
+     "iopub.status.busy": "2026-03-03T16:32:41.070568Z",
+     "iopub.status.idle": "2026-03-03T16:32:41.080342Z",
+     "shell.execute_reply": "2026-03-03T16:32:41.079814Z"
     },
     "papermill": {
-     "duration": 0.007714,
-     "end_time": "2026-02-25T08:50:26.899332",
+     "duration": 0.013448,
+     "end_time": "2026-03-03T16:32:41.081299",
      "exception": false,
-     "start_time": "2026-02-25T08:50:26.891618",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [],
-   "source": [
-    "class FFTMagnitude(nn.Module):\n",
-    "    def forward(self, x_raw):\n",
-    "        # x_raw: [B,3,H,W] in [0,1]\n",
-    "        f = torch.fft.fft2(x_raw)\n",
-    "        f = torch.fft.fftshift(f)\n",
-    "        mag = torch.abs(f)\n",
-    "        mag = torch.log1p(mag)\n",
-    "\n",
-    "        # per-image normalization (helps stability)\n",
-    "        mag = (mag - mag.mean(dim=(2,3), keepdim=True)) / (mag.std(dim=(2,3), keepdim=True) + 1e-6)\n",
-    "        return mag\n",
-    "\n"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 8,
-   "id": "bf6c5251",
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.904999Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.904816Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.908420Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.907939Z"
-    },
-    "papermill": {
-     "duration": 0.007745,
-     "end_time": "2026-02-25T08:50:26.909365",
-     "exception": false,
-     "start_time": "2026-02-25T08:50:26.901620",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [],
-   "source": [
-    "# from facenet_pytorch import MTCNN\n",
-    "# from pathlib import Path\n",
-    "# from PIL import Image\n",
-    "# import numpy as np\n",
-    "# import cv2\n",
-    "# from tqdm import tqdm\n",
-    "# import torch\n",
-    "\n",
-    "# device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n",
-    "\n",
-    "# mtcnn = MTCNN(\n",
-    "#     keep_all=True,\n",
-    "#     device=device\n",
-    "# )\n",
-    "\n",
-    "# # 5-point template (ArcFace-style) for 112x112, we will scale later\n",
-    "# TEMPLATE_5PTS = np.array([\n",
-    "#     [38.2946, 51.6963],  # left eye\n",
-    "#     [73.5318, 51.5014],  # right eye\n",
-    "#     [56.0252, 71.7366],  # nose\n",
-    "#     [41.5493, 92.3655],  # left mouth\n",
-    "#     [70.7299, 92.2041],  # right mouth\n",
-    "# ], dtype=np.float32)\n",
-    "\n",
-    "# def estimate_similarity_transform(src_pts, out_size=224):\n",
-    "#     # Scale template from 112 base to out_size\n",
-    "#     scale = out_size / 112.0\n",
-    "#     dst_pts = TEMPLATE_5PTS * scale\n",
-    "\n",
-    "#     # OpenCV expects shape (N,1,2)\n",
-    "#     src = src_pts.reshape(-1,1,2).astype(np.float32)\n",
-    "#     dst = dst_pts.reshape(-1,1,2).astype(np.float32)\n",
-    "\n",
-    "#     M, _ = cv2.estimateAffinePartial2D(src, dst, method=cv2.LMEDS)\n",
-    "#     return M\n",
-    "\n",
-    "# def align_and_crop_pil(img_pil, landmarks, out_size=224):\n",
-    "#     \"\"\"\n",
-    "#     img_pil: PIL RGB\n",
-    "#     landmarks: (5,2) in original image coords\n",
-    "#     returns: aligned PIL RGB of size out_size x out_size\n",
-    "#     \"\"\"\n",
-    "#     img = np.array(img_pil)  # HWC RGB uint8\n",
-    "\n",
-    "#     M = estimate_similarity_transform(landmarks, out_size=out_size)\n",
-    "#     if M is None:\n",
-    "#         return None\n",
-    "\n",
-    "#     aligned = cv2.warpAffine(\n",
-    "#         img, M, (out_size, out_size),\n",
-    "#         flags=cv2.INTER_LINEAR,\n",
-    "#         borderMode=cv2.BORDER_CONSTANT,\n",
-    "#         borderValue=(0,0,0)\n",
-    "#     )\n",
-    "\n",
-    "#     return Image.fromarray(aligned)\n",
-    "\n",
-    "# def process_folder(in_root, out_root, exts=(\"jpg\",\"jpeg\",\"png\"), out_size=224):\n",
-    "#     in_root = Path(in_root)\n",
-    "#     out_root = Path(out_root)\n",
-    "#     out_root.mkdir(parents=True, exist_ok=True)\n",
-    "\n",
-    "#     files = []\n",
-    "#     for e in exts:\n",
-    "#         files += list(in_root.rglob(f\"*.{e}\"))\n",
-    "\n",
-    "#     kept = 0\n",
-    "#     missed = 0\n",
-    "\n",
-    "#     for fp in tqdm(files, desc=f\"Processing {in_root.name}\"):\n",
-    "#         try:\n",
-    "#             img = Image.open(fp).convert(\"RGB\")\n",
-    "#         except:\n",
-    "#             missed += 1\n",
-    "#             continue\n",
-    "\n",
-    "#         boxes, probs, lms = mtcnn.detect(img, landmarks=True)\n",
-    "\n",
-    "#         if lms is None or len(lms) == 0:\n",
-    "#             missed += 1\n",
-    "#             continue\n",
-    "\n",
-    "#         # choose highest confidence face\n",
-    "#         if probs is None:\n",
-    "#             idx = 0\n",
-    "#         else:\n",
-    "#             idx = int(np.argmax(probs))\n",
-    "\n",
-    "#         landmarks = lms[idx].astype(np.float32)  # (5,2)\n",
-    "\n",
-    "#         aligned = align_and_crop_pil(img, landmarks, out_size=out_size)\n",
-    "#         if aligned is None:\n",
-    "#             missed += 1\n",
-    "#             continue\n",
-    "\n",
-    "#         # preserve filename, save png\n",
-    "#         out_path = out_root / (fp.stem + \".png\")\n",
-    "#         aligned.save(out_path)\n",
-    "#         kept += 1\n",
-    "\n",
-    "#     print(f\"Saved: {kept}, Missed: {missed}\")\n",
-    "\n",
-    "\n"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 9,
-   "id": "649d3ab9",
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.914792Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.914597Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.923425Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.922941Z"
-    },
-    "papermill": {
-     "duration": 0.012737,
-     "end_time": "2026-02-25T08:50:26.924430",
-     "exception": false,
-     "start_time": "2026-02-25T08:50:26.911693",
+     "start_time": "2026-03-03T16:32:41.067851",
      "status": "completed"
     },
     "tags": []
@@ -425,17 +307,25 @@
     "        super().__init__()\n",
     "        self.use_fft = use_fft\n",
     "        self.grid = grid\n",
+    "        self.freq_filter = GlobalFilter(dim=512, h=28, w=28, fp32fft=True)\n",
     "\n",
-    "        # backbone\n",
+    "        # --backbone--\n",
     "        resnet = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)\n",
-    "        self.resnet = nn.Sequential(*list(resnet.children())[:-2])  # conv5 output\n",
     "\n",
-    "        # projections\n",
+    "           # split resnet into stages\n",
+    "        self.stem = nn.Sequential(resnet.conv1, resnet.bn1, resnet.relu, resnet.maxpool)\n",
+    "        self.layer1 = resnet.layer1\n",
+    "        self.layer2 = resnet.layer2   # -> [B,512,28,28] for 224 input\n",
+    "        self.layer3 = resnet.layer3\n",
+    "        self.layer4 = resnet.layer4   # -> [B,2048,7,7]\n",
+    "        \n",
+    "            # RGB tokens from layer4 (same spirit as before)\n",
     "        self.proj_rgb = nn.Conv2d(2048, embed_dim, 1)\n",
-    "        self.proj_fft = nn.Conv2d(3, embed_dim, 1)\n",
+    "        \n",
+    "           # FREQ tokens will come from layer2 (512 channels)\n",
+    "        self.proj_fft = nn.Conv2d(512, embed_dim, 1)\n",
     "\n",
-    "        self.fft_layer = FFTMagnitude()\n",
-    "\n",
+    "        \n",
     "        # ---- Cross-Modality Fusion (RGB attends to FFT) ----\n",
     "        self.cross_attn = nn.MultiheadAttention(embed_dim, num_heads, batch_first=True)\n",
     "\n",
@@ -462,218 +352,227 @@
     "            nn.LayerNorm(embed_dim),\n",
     "            nn.Linear(embed_dim, 2)\n",
     "        )\n",
-    "\n",
-    "    def forward(self, x_rgb, x_raw):\n",
+    "   \n",
+    "   \n",
+    "    def forward(self, x_rgb, x_raw=None):\n",
     "        B = x_rgb.size(0)\n",
-    "\n",
+    "    \n",
+    "        # ---- run ResNet stages ----\n",
+    "        x = self.stem(x_rgb)\n",
+    "        x = self.layer1(x)\n",
+    "        feat_l2 = self.layer2(x)        # [B,512,28,28]  <-- use this for freq branch\n",
+    "    \n",
+    "        x = self.layer3(feat_l2)\n",
+    "        feat_l4 = self.layer4(x)        # [B,2048,7,7]   <-- use this for rgb branch\n",
+    "    \n",
     "        # ---- RGB tokens ----\n",
-    "        rgb_feat = self.resnet(x_rgb)                       # [B,2048,H',W'] (usually 7x7)\n",
-    "        rgb_map = self.proj_rgb(rgb_feat)                   # [B,E,H',W']\n",
+    "        rgb_map = self.proj_rgb(feat_l4)                       # [B,E,7,7]\n",
     "        rgb_map = F.adaptive_avg_pool2d(rgb_map, (self.grid, self.grid))\n",
-    "        rgb_tok = rgb_map.flatten(2).transpose(1, 2)        # [B, G^2, E]\n",
-    "\n",
-    "        # ---- FFT tokens ----\n",
+    "        rgb_tok = rgb_map.flatten(2).transpose(1, 2)           # [B,G^2,E]\n",
+    "    \n",
+    "        # ---- FREQ tokens (M2TR-style learned filter on feature map) ----\n",
     "        if self.use_fft:\n",
-    "            fft_img = self.fft_layer(x_raw)                 # [B,3,H,W]\n",
-    "            fft_map = self.proj_fft(fft_img)                # [B,E,H,W]\n",
+    "            freq_feat = self.freq_filter(feat_l2)              # [B,512,28,28]\n",
+    "            fft_map = self.proj_fft(freq_feat)                 # [B,E,28,28]\n",
     "            fft_map = F.adaptive_avg_pool2d(fft_map, (self.grid, self.grid))\n",
-    "            fft_tok = fft_map.flatten(2).transpose(1, 2)    # [B, G^2, E]\n",
+    "            fft_tok = fft_map.flatten(2).transpose(1, 2)       # [B,G^2,E]\n",
     "        else:\n",
     "            fft_tok = torch.zeros_like(rgb_tok)\n",
-    "\n",
-    "        # ---- Modality embeddings ----\n",
+    "    \n",
+    "        # ---- type embeds ----\n",
     "        rgb_tok = rgb_tok + self.type_embed[:, 0:1, :]\n",
     "        fft_tok = fft_tok + self.type_embed[:, 1:2, :]\n",
-    "\n",
-    "        # ---- Cross-modality fusion: RGB attends to FFT ----\n",
-    "        # query=rgb, key/value=fft\n",
+    "    \n",
+    "        # ---- Cross-attn fusion ----\n",
     "        fused_rgb, _ = self.cross_attn(query=rgb_tok, key=fft_tok, value=fft_tok)\n",
     "        rgb_tok = rgb_tok + fused_rgb\n",
-    "\n",
-    "        # ---- Build full token sequence ----\n",
+    "    \n",
+    "        # ---- tokens + transformer ----\n",
     "        cls = self.cls_token.repeat(B, 1, 1)\n",
-    "        tokens = torch.cat([cls, rgb_tok, fft_tok], dim=1)  # [B, 1+2*G^2, E]\n",
+    "        tokens = torch.cat([cls, rgb_tok, fft_tok], dim=1)\n",
     "        tokens = tokens + self.pos_embed[:, :tokens.size(1), :]\n",
-    "\n",
+    "    \n",
     "        out = self.transformer(tokens)\n",
-    "        cls_out = out[:, 0]                                 # CLS only\n",
+    "        cls_out = out[:, 0]\n",
     "        return self.cls_head(cls_out)\n"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
-   "id": "dc6b66c5",
+   "execution_count": 8,
+   "id": "3af465f0",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.929969Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.929763Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.941236Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.940737Z"
+     "iopub.execute_input": "2026-03-03T16:32:41.086326Z",
+     "iopub.status.busy": "2026-03-03T16:32:41.086118Z",
+     "iopub.status.idle": "2026-03-03T16:32:41.098758Z",
+     "shell.execute_reply": "2026-03-03T16:32:41.098199Z"
     },
     "papermill": {
-     "duration": 0.015471,
-     "end_time": "2026-02-25T08:50:26.942278",
+     "duration": 0.016372,
+     "end_time": "2026-03-03T16:32:41.099754",
      "exception": false,
-     "start_time": "2026-02-25T08:50:26.926807",
+     "start_time": "2026-03-03T16:32:41.083382",
      "status": "completed"
     },
     "tags": []
    },
    "outputs": [],
    "source": [
+    "from torch.optim.lr_scheduler import CosineAnnealingLR\n",
+    "\n",
     "def train_stage3():\n",
     "    device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n",
     "    model = Stage3Hybrid().to(device)\n",
-    "            \n",
     "\n",
-    "  # -------- Transforms --------\n",
-    "    tfm_raw_train = transforms.Compose([\n",
-    "        transforms.Resize((224,224)),\n",
-    "        RandomJPEG(quality_min=30, quality_max=100, p=0.7),\n",
-    "        transforms.ToTensor(),   # raw [0,1] for FFT\n",
-    "    ])\n",
-    "    \n",
-    "    tfm_rgb_train = transforms.Compose([\n",
-    "        transforms.Resize((224,224)),\n",
-    "        RandomJPEG(quality_min=30, quality_max=100, p=0.7),\n",
-    "        transforms.RandomHorizontalFlip(),\n",
-    "        transforms.ColorJitter(0.1, 0.1, 0.05, 0.02),          # smaller than your old one\n",
-    "        transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 1.0)), # mild blur\n",
-    "        transforms.ToTensor(),\n",
-    "        transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225]),\n",
-    "    ])\n",
-    "    \n",
-    "    tfm_raw_eval = transforms.Compose([\n",
-    "        transforms.Resize((224,224)),\n",
-    "        transforms.ToTensor(),\n",
-    "    ])\n",
-    "    \n",
-    "    tfm_rgb_eval = transforms.Compose([\n",
-    "        transforms.Resize((224,224)),\n",
-    "        transforms.ToTensor(),\n",
-    "        transforms.Normalize([0.485,0.456,0.406],\n",
-    "                             [0.229,0.224,0.225]),\n",
-    "    ])\n",
-    "    \n",
+    "    # ---- Dataset ----\n",
+    "    jpeg_aug = RandomJPEG(quality_min=30, quality_max=100, p=0.7)\n",
     "\n",
-    "    # ---- Dataset ---- \n",
+    "    rgb_color_aug = transforms.Compose([\n",
+    "        transforms.ColorJitter(0.1, 0.1, 0.05, 0.02),\n",
+    "    ])\n",
+    "\n",
+    "    rgb_norm = transforms.Normalize([0.485, 0.456, 0.406],\n",
+    "                                    [0.229, 0.224, 0.225])\n",
+    "\n",
     "    trainset = DualViewImageFolder(\n",
     "        \"/kaggle/input/140k-real-and-fake-faces/real_vs_fake/real-vs-fake/train\",\n",
-    "        tfm_raw=tfm_raw_train,\n",
-    "        tfm_rgb=tfm_rgb_train\n",
+    "        p_flip=0.5, jpeg_aug=jpeg_aug, rgb_color_aug=rgb_color_aug, rgb_norm=rgb_norm\n",
     "    )\n",
-    "    \n",
     "    valset = DualViewImageFolder(\n",
     "        \"/kaggle/input/140k-real-and-fake-faces/real_vs_fake/real-vs-fake/valid\",\n",
-    "        tfm_raw=tfm_raw_eval,\n",
-    "        tfm_rgb=tfm_rgb_eval\n",
+    "        p_flip=0.0, jpeg_aug=None, rgb_color_aug=None, rgb_norm=rgb_norm\n",
     "    )\n",
-    "    \n",
     "    testset = DualViewImageFolder(\n",
     "        \"/kaggle/input/140k-real-and-fake-faces/real_vs_fake/real-vs-fake/test\",\n",
-    "        tfm_raw=tfm_raw_eval,\n",
-    "        tfm_rgb=tfm_rgb_eval\n",
+    "        p_flip=0.0, jpeg_aug=None, rgb_color_aug=None, rgb_norm=rgb_norm\n",
     "    )\n",
-    "\n",
-    "\n",
     "\n",
     "    trainloader = DataLoader(trainset, batch_size=16, shuffle=True, num_workers=0)\n",
     "    valloader   = DataLoader(valset, batch_size=16, shuffle=False, num_workers=2)\n",
-    "    testloader = DataLoader(testset, batch_size=16, shuffle=False, num_workers=2)\n",
+    "    testloader  = DataLoader(testset, batch_size=16, shuffle=False, num_workers=2)\n",
     "\n",
-    "   \n",
-    "    print(\"class_to_idx:\", trainset.class_to_idx)\n",
-    "    real_idx = trainset.class_to_idx[\"real\"]\n",
-    "\n",
+    "    class_to_idx = trainset.class_to_idx\n",
+    "    print(\"class_to_idx:\", class_to_idx)\n",
     "\n",
     "    # ---- Optimiser / loss / scaler ----\n",
-    "    opt = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-4)\n",
+    "    backbone_params = (\n",
+    "        list(model.stem.parameters())\n",
+    "        + list(model.layer1.parameters())\n",
+    "        + list(model.layer2.parameters())\n",
+    "        + list(model.layer3.parameters())\n",
+    "        + list(model.layer4.parameters())\n",
+    "    )\n",
+    "    head_params = [\n",
+    "        p for n, p in model.named_parameters()\n",
+    "        if not (n.startswith(\"stem.\") or n.startswith(\"layer1.\") or n.startswith(\"layer2.\")\n",
+    "                or n.startswith(\"layer3.\") or n.startswith(\"layer4.\"))\n",
+    "    ]\n",
+    "\n",
+    "    opt = optim.AdamW(\n",
+    "        [\n",
+    "            {\"params\": backbone_params, \"lr\": 1e-5},\n",
+    "            {\"params\": head_params,     \"lr\": 1e-4},\n",
+    "        ],\n",
+    "        weight_decay=1e-4\n",
+    "    )\n",
+    "\n",
     "    criterion = nn.CrossEntropyLoss()\n",
-    "    epochs, best_auc = 10, 0\n",
+    "    epochs = 10\n",
+    "    best_auc = 0.0\n",
+    "\n",
+    "    scheduler = CosineAnnealingLR(opt, T_max=epochs)\n",
     "\n",
     "    use_cuda = torch.cuda.is_available()\n",
     "    scaler = torch.amp.GradScaler(enabled=use_cuda)\n",
-    "    \n",
+    "\n",
+    "    fake_idx = class_to_idx[\"fake\"]  # define once\n",
+    "\n",
     "    for epoch in range(epochs):\n",
+    "        # ---- Train ----\n",
     "        model.train()\n",
     "        running_loss = 0.0\n",
-    "    \n",
+    "\n",
     "        for x_rgb, x_raw, lbls in tqdm(trainloader, desc=f\"Epoch {epoch+1}/{epochs}\", ncols=100):\n",
     "            x_rgb = x_rgb.to(device, non_blocking=True)\n",
     "            x_raw = x_raw.to(device, non_blocking=True)\n",
     "            lbls  = lbls.to(device, non_blocking=True)\n",
-    "    \n",
+    "\n",
     "            opt.zero_grad(set_to_none=True)\n",
-    "    \n",
+    "\n",
     "            with torch.amp.autocast(device_type=\"cuda\", enabled=use_cuda):\n",
     "                logits = model(x_rgb, x_raw)\n",
     "                loss = criterion(logits, lbls)\n",
-    "    \n",
+    "\n",
     "            scaler.scale(loss).backward()\n",
     "            scaler.step(opt)\n",
     "            scaler.update()\n",
-    "    \n",
-    "            running_loss += loss.item()\n",
     "\n",
+    "            running_loss += loss.item()\n",
     "\n",
     "        # ---- Validation ----\n",
     "        model.eval()\n",
     "        y_true, y_prob = [], []\n",
-    "        \n",
+    "\n",
     "        with torch.no_grad():\n",
     "            for x_rgb, x_raw, lbls in valloader:\n",
     "                x_rgb = x_rgb.to(device, non_blocking=True)\n",
     "                x_raw = x_raw.to(device, non_blocking=True)\n",
-    "        \n",
-    "                probs = torch.softmax(model(x_rgb, x_raw), dim=1)[:, real_idx].cpu().numpy()\n",
-    "        \n",
-    "                y_true.extend(lbls.numpy())\n",
-    "                y_prob.extend(probs)\n",
     "\n",
-    "        \n",
+    "                logits = model(x_rgb, x_raw)\n",
+    "                probs_fake = torch.softmax(logits, dim=1)[:, fake_idx].cpu().numpy()\n",
+    "\n",
+    "                lbls_np = lbls.numpy()\n",
+    "                y_true.extend((lbls_np == fake_idx).astype(np.int32))\n",
+    "                y_prob.extend(probs_fake)\n",
     "\n",
     "        auc, f1, eer, acc = calc_metrics(np.array(y_true), np.array(y_prob))\n",
     "        print(f\"Epoch {epoch+1}: loss={running_loss/len(trainloader):.4f} | \"\n",
     "              f\"AUROC={auc:.3f} | F1={f1:.3f} | EER={eer:.3f} | ACC={acc:.3f}\")\n",
     "\n",
+    "        scheduler.step()\n",
+    "        print(\"LRs:\", [pg[\"lr\"] for pg in opt.param_groups])\n",
+    "\n",
     "        ckpt_path = f\"/kaggle/working/stage3_epoch{epoch+1}.pth\"\n",
     "        torch.save(model.state_dict(), ckpt_path)\n",
+    "\n",
     "        if auc > best_auc:\n",
     "            best_auc = auc\n",
     "            torch.save(model.state_dict(), \"/kaggle/working/best_auc_stage3.pth\")\n",
-    "            print(f\"★ New best AUC {best_auc:.3f} (ACC={acc:.3f})\")\n",
+    "            print(f\"New best AUC {best_auc:.3f} (ACC={acc:.3f})\")\n",
     "\n",
     "    print(\"\\nTraining complete!\")\n",
     "    print(f\"Best model achieved: AUROC={best_auc:.3f}\")\n",
-    "    return model, testloader, real_idx\n"
+    "    return model, testloader, class_to_idx"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
-   "id": "d35cb844",
+   "execution_count": 9,
+   "id": "e645f66e",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.948004Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.947497Z",
-     "iopub.status.idle": "2026-02-25T08:50:26.952487Z",
-     "shell.execute_reply": "2026-02-25T08:50:26.951977Z"
+     "iopub.execute_input": "2026-03-03T16:32:41.104494Z",
+     "iopub.status.busy": "2026-03-03T16:32:41.104290Z",
+     "iopub.status.idle": "2026-03-03T16:32:41.109526Z",
+     "shell.execute_reply": "2026-03-03T16:32:41.109011Z"
     },
     "papermill": {
-     "duration": 0.008807,
-     "end_time": "2026-02-25T08:50:26.953504",
+     "duration": 0.008702,
+     "end_time": "2026-03-03T16:32:41.110502",
      "exception": false,
-     "start_time": "2026-02-25T08:50:26.944697",
+     "start_time": "2026-03-03T16:32:41.101800",
      "status": "completed"
     },
     "tags": []
    },
    "outputs": [],
    "source": [
-    "def evaluate(model, loader, real_idx, tag=\"TEST\"):\n",
+    "def evaluate(model, loader, class_to_idx, tag=\"TEST\"):\n",
     "    device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n",
     "    model.eval()\n",
+    "\n",
+    "    fake_idx = class_to_idx[\"fake\"]   # positive class = fake\n",
     "    y_true, y_prob = [], []\n",
     "\n",
     "    with torch.no_grad():\n",
@@ -681,32 +580,35 @@
     "            x_rgb = x_rgb.to(device, non_blocking=True)\n",
     "            x_raw = x_raw.to(device, non_blocking=True)\n",
     "\n",
-    "            probs = torch.softmax(model(x_rgb, x_raw), dim=1)[:, real_idx].cpu().numpy()\n",
+    "            logits = model(x_rgb, x_raw)\n",
+    "            probs_fake = torch.softmax(logits, dim=1)[:, fake_idx].cpu().numpy()\n",
     "\n",
-    "            y_true.extend(lbls.numpy())\n",
-    "            y_prob.extend(probs)\n",
+    "            # y_true must be 1 for fake, 0 for real\n",
+    "            lbls_np = lbls.numpy()\n",
+    "            y_true.extend((lbls_np == fake_idx).astype(np.int32))\n",
+    "            y_prob.extend(probs_fake)\n",
     "\n",
     "    auc, f1, eer, acc = calc_metrics(np.array(y_true), np.array(y_prob))\n",
     "    print(f\"{tag} → AUROC={auc:.3f} | F1={f1:.3f} | EER={eer:.3f} | ACC={acc:.3f}\")\n",
-    "    return auc, f1, eer, acc\n"
+    "    return auc, f1, eer, acc"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
-   "id": "7b594495",
+   "execution_count": 10,
+   "id": "55ef692c",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-02-25T08:50:26.959224Z",
-     "iopub.status.busy": "2026-02-25T08:50:26.958849Z",
-     "iopub.status.idle": "2026-02-25T17:13:39.010142Z",
-     "shell.execute_reply": "2026-02-25T17:13:39.009185Z"
+     "iopub.execute_input": "2026-03-03T16:32:41.115422Z",
+     "iopub.status.busy": "2026-03-03T16:32:41.115093Z",
+     "iopub.status.idle": "2026-03-03T22:25:53.388562Z",
+     "shell.execute_reply": "2026-03-03T22:25:53.387656Z"
     },
     "papermill": {
-     "duration": 30192.05571,
-     "end_time": "2026-02-25T17:13:39.011649",
+     "duration": 21192.277888,
+     "end_time": "2026-03-03T22:25:53.390438",
      "exception": false,
-     "start_time": "2026-02-25T08:50:26.955939",
+     "start_time": "2026-03-03T16:32:41.112550",
      "status": "completed"
     },
     "tags": []
@@ -717,7 +619,7 @@
      "output_type": "stream",
      "text": [
       "Downloading: \"https://download.pytorch.org/models/resnet50-0676ba61.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-0676ba61.pth\n",
-      "100%|██████████| 97.8M/97.8M [00:00<00:00, 197MB/s]\n"
+      "100%|██████████| 97.8M/97.8M [00:00<00:00, 237MB/s]\n"
      ]
     },
     {
@@ -731,146 +633,159 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 1/10: 100%|███████████████████████████████████████████████| 6250/6250 [55:08<00:00,  1.89it/s]\n"
+      "Epoch 1/10: 100%|███████████████████████████████████████████████| 6250/6250 [43:10<00:00,  2.41it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 1: loss=0.1635 | AUROC=0.999 | F1=0.972 | EER=0.015 | ACC=0.972\n",
-      "★ New best AUC 0.999 (ACC=0.972)\n"
+      "Epoch 1: loss=0.1713 | AUROC=1.000 | F1=0.989 | EER=0.008 | ACC=0.989\n",
+      "LRs: [9.755282581475769e-06, 9.755282581475769e-05]\n",
+      "New best AUC 1.000 (ACC=0.989)\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 2/10: 100%|███████████████████████████████████████████████| 6250/6250 [46:16<00:00,  2.25it/s]\n"
+      "Epoch 2/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:29<00:00,  3.21it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 2: loss=0.0690 | AUROC=1.000 | F1=0.991 | EER=0.009 | ACC=0.991\n",
-      "★ New best AUC 1.000 (ACC=0.991)\n"
+      "Epoch 2: loss=0.0590 | AUROC=1.000 | F1=0.996 | EER=0.004 | ACC=0.996\n",
+      "LRs: [9.045084971874738e-06, 9.045084971874737e-05]\n",
+      "New best AUC 1.000 (ACC=0.996)\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 3/10: 100%|███████████████████████████████████████████████| 6250/6250 [46:08<00:00,  2.26it/s]\n"
+      "Epoch 3/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:24<00:00,  3.21it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 3: loss=0.0512 | AUROC=1.000 | F1=0.991 | EER=0.008 | ACC=0.991\n",
-      "★ New best AUC 1.000 (ACC=0.991)\n"
+      "Epoch 3: loss=0.0321 | AUROC=1.000 | F1=0.995 | EER=0.004 | ACC=0.995\n",
+      "LRs: [7.938926261462366e-06, 7.938926261462366e-05]\n",
+      "New best AUC 1.000 (ACC=0.995)\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 4/10: 100%|███████████████████████████████████████████████| 6250/6250 [46:28<00:00,  2.24it/s]\n"
+      "Epoch 4/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:12<00:00,  3.23it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 4: loss=0.0423 | AUROC=1.000 | F1=0.991 | EER=0.009 | ACC=0.991\n"
+      "Epoch 4: loss=0.0217 | AUROC=1.000 | F1=0.998 | EER=0.002 | ACC=0.998\n",
+      "LRs: [6.545084971874738e-06, 6.545084971874737e-05]\n",
+      "New best AUC 1.000 (ACC=0.998)\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 5/10: 100%|███████████████████████████████████████████████| 6250/6250 [47:57<00:00,  2.17it/s]\n"
+      "Epoch 5/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:11<00:00,  3.24it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 5: loss=0.0354 | AUROC=1.000 | F1=0.991 | EER=0.009 | ACC=0.991\n"
+      "Epoch 5: loss=0.0153 | AUROC=1.000 | F1=0.998 | EER=0.002 | ACC=0.998\n",
+      "LRs: [5e-06, 4.9999999999999996e-05]\n",
+      "New best AUC 1.000 (ACC=0.998)\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 6/10: 100%|███████████████████████████████████████████████| 6250/6250 [48:10<00:00,  2.16it/s]\n"
+      "Epoch 6/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:15<00:00,  3.23it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 6: loss=0.0319 | AUROC=1.000 | F1=0.983 | EER=0.008 | ACC=0.983\n",
-      "★ New best AUC 1.000 (ACC=0.983)\n"
+      "Epoch 6: loss=0.0108 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
+      "LRs: [3.4549150281252635e-06, 3.454915028125263e-05]\n",
+      "New best AUC 1.000 (ACC=0.999)\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 7/10: 100%|███████████████████████████████████████████████| 6250/6250 [47:36<00:00,  2.19it/s]\n"
+      "Epoch 7/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:35<00:00,  3.20it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 7: loss=0.0283 | AUROC=1.000 | F1=0.993 | EER=0.007 | ACC=0.993\n",
-      "★ New best AUC 1.000 (ACC=0.993)\n"
+      "Epoch 7: loss=0.0072 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
+      "LRs: [2.061073738537635e-06, 2.0610737385376345e-05]\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 8/10: 100%|███████████████████████████████████████████████| 6250/6250 [48:01<00:00,  2.17it/s]\n"
+      "Epoch 8/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:34<00:00,  3.20it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 8: loss=0.0258 | AUROC=1.000 | F1=0.989 | EER=0.006 | ACC=0.989\n",
-      "★ New best AUC 1.000 (ACC=0.989)\n"
+      "Epoch 8: loss=0.0057 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
+      "LRs: [9.549150281252633e-07, 9.549150281252631e-06]\n",
+      "New best AUC 1.000 (ACC=0.999)\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 9/10: 100%|███████████████████████████████████████████████| 6250/6250 [47:40<00:00,  2.18it/s]\n"
+      "Epoch 9/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:36<00:00,  3.19it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 9: loss=nan | AUROC=0.998 | F1=0.986 | EER=0.015 | ACC=0.986\n"
+      "Epoch 9: loss=0.0037 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
+      "LRs: [2.4471741852423233e-07, 2.447174185242323e-06]\n",
+      "New best AUC 1.000 (ACC=0.999)\n"
      ]
     },
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Epoch 10/10: 100%|██████████████████████████████████████████████| 6250/6250 [47:44<00:00,  2.18it/s]\n"
+      "Epoch 10/10: 100%|██████████████████████████████████████████████| 6250/6250 [32:15<00:00,  3.23it/s]\n"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Epoch 10: loss=nan | AUROC=0.998 | F1=0.986 | EER=0.015 | ACC=0.986\n",
+      "Epoch 10: loss=0.0026 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
+      "LRs: [0.0, 0.0]\n",
+      "New best AUC 1.000 (ACC=0.999)\n",
       "\n",
       "Training complete!\n",
       "Best model achieved: AUROC=1.000\n"
@@ -880,14 +795,14 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "140k TEST: 100%|████████████████████████████████████████████████| 1250/1250 [02:24<00:00,  8.66it/s]"
+      "140k TEST: 100%|████████████████████████████████████████████████| 1250/1250 [01:54<00:00, 10.93it/s]"
      ]
     },
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "140k TEST → AUROC=1.000 | F1=0.989 | EER=0.006 | ACC=0.989\n"
+      "140k TEST → AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n"
      ]
     },
     {
@@ -900,14 +815,12 @@
    ],
    "source": [
     "if __name__ == \"__main__\":\n",
-    "    model, testloader, real_idx = train_stage3()\n",
+    "    model, testloader, class_to_idx = train_stage3()\n",
     "\n",
     "    # Load best validation model before testing\n",
     "    model.load_state_dict(torch.load(\"/kaggle/working/best_auc_stage3.pth\"))\n",
     "\n",
-    "    evaluate(model, testloader, real_idx, tag=\"140k TEST\")\n",
-    "\n",
-    "\n"
+    "    evaluate(model, testloader, class_to_idx, tag=\"140k TEST\")"
    ]
   }
  ],
@@ -953,14 +866,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 30216.697933,
-   "end_time": "2026-02-25T17:13:44.657872",
+   "duration": 21216.456896,
+   "end_time": "2026-03-03T22:25:58.779810",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2026-02-25T08:50:07.959939",
+   "start_time": "2026-03-03T16:32:22.322914",
    "version": "2.6.0"
   }
  },
