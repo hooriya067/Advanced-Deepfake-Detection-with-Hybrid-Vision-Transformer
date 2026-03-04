@@ -3,21 +3,21 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "1feacbf7",
+   "id": "8063c4a8",
    "metadata": {
     "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
     "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
     "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:27.061058Z",
-     "iopub.status.busy": "2026-03-03T16:32:27.060567Z",
-     "iopub.status.idle": "2026-03-03T16:32:41.006973Z",
-     "shell.execute_reply": "2026-03-03T16:32:41.006364Z"
+     "iopub.execute_input": "2026-03-04T11:42:53.317755Z",
+     "iopub.status.busy": "2026-03-04T11:42:53.317129Z",
+     "iopub.status.idle": "2026-03-04T11:43:02.647452Z",
+     "shell.execute_reply": "2026-03-04T11:43:02.646845Z"
     },
     "papermill": {
-     "duration": 13.951381,
-     "end_time": "2026-03-03T16:32:41.008455",
+     "duration": 9.335602,
+     "end_time": "2026-03-04T11:43:02.648862",
      "exception": false,
-     "start_time": "2026-03-03T16:32:27.057074",
+     "start_time": "2026-03-04T11:42:53.313260",
      "status": "completed"
     },
     "tags": []
@@ -51,19 +51,302 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "57b9a3de",
+   "id": "fc80ea46",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:41.015544Z",
-     "iopub.status.busy": "2026-03-03T16:32:41.015211Z",
-     "iopub.status.idle": "2026-03-03T16:32:41.022764Z",
-     "shell.execute_reply": "2026-03-03T16:32:41.022054Z"
+     "iopub.execute_input": "2026-03-04T11:43:02.654508Z",
+     "iopub.status.busy": "2026-03-04T11:43:02.654184Z",
+     "iopub.status.idle": "2026-03-04T11:45:26.563805Z",
+     "shell.execute_reply": "2026-03-04T11:45:26.562811Z"
     },
     "papermill": {
-     "duration": 0.011819,
-     "end_time": "2026-03-03T16:32:41.023948",
+     "duration": 143.913921,
+     "end_time": "2026-03-04T11:45:26.565320",
      "exception": false,
-     "start_time": "2026-03-03T16:32:41.012129",
+     "start_time": "2026-03-04T11:43:02.651399",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Collecting facenet-pytorch\r\n",
+      "  Downloading facenet_pytorch-2.6.0-py3-none-any.whl.metadata (12 kB)\r\n",
+      "Requirement already satisfied: numpy<2.0.0,>=1.24.0 in /usr/local/lib/python3.11/dist-packages (from facenet-pytorch) (1.26.4)\r\n",
+      "Collecting Pillow<10.3.0,>=10.2.0 (from facenet-pytorch)\r\n",
+      "  Downloading pillow-10.2.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (9.7 kB)\r\n",
+      "Requirement already satisfied: requests<3.0.0,>=2.0.0 in /usr/local/lib/python3.11/dist-packages (from facenet-pytorch) (2.32.5)\r\n",
+      "Collecting torch<2.3.0,>=2.2.0 (from facenet-pytorch)\r\n",
+      "  Downloading torch-2.2.2-cp311-cp311-manylinux1_x86_64.whl.metadata (25 kB)\r\n",
+      "Collecting torchvision<0.18.0,>=0.17.0 (from facenet-pytorch)\r\n",
+      "  Downloading torchvision-0.17.2-cp311-cp311-manylinux1_x86_64.whl.metadata (6.6 kB)\r\n",
+      "Requirement already satisfied: tqdm<5.0.0,>=4.0.0 in /usr/local/lib/python3.11/dist-packages (from facenet-pytorch) (4.67.1)\r\n",
+      "Requirement already satisfied: mkl_fft in /usr/local/lib/python3.11/dist-packages (from numpy<2.0.0,>=1.24.0->facenet-pytorch) (1.3.8)\r\n",
+      "Requirement already satisfied: mkl_random in /usr/local/lib/python3.11/dist-packages (from numpy<2.0.0,>=1.24.0->facenet-pytorch) (1.2.4)\r\n",
+      "Requirement already satisfied: mkl_umath in /usr/local/lib/python3.11/dist-packages (from numpy<2.0.0,>=1.24.0->facenet-pytorch) (0.1.1)\r\n",
+      "Requirement already satisfied: mkl in /usr/local/lib/python3.11/dist-packages (from numpy<2.0.0,>=1.24.0->facenet-pytorch) (2025.2.0)\r\n",
+      "Requirement already satisfied: tbb4py in /usr/local/lib/python3.11/dist-packages (from numpy<2.0.0,>=1.24.0->facenet-pytorch) (2022.2.0)\r\n",
+      "Requirement already satisfied: mkl-service in /usr/local/lib/python3.11/dist-packages (from numpy<2.0.0,>=1.24.0->facenet-pytorch) (2.4.1)\r\n",
+      "Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.11/dist-packages (from requests<3.0.0,>=2.0.0->facenet-pytorch) (3.4.3)\r\n",
+      "Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.11/dist-packages (from requests<3.0.0,>=2.0.0->facenet-pytorch) (3.10)\r\n",
+      "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.11/dist-packages (from requests<3.0.0,>=2.0.0->facenet-pytorch) (2.5.0)\r\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.11/dist-packages (from requests<3.0.0,>=2.0.0->facenet-pytorch) (2025.8.3)\r\n",
+      "Requirement already satisfied: filelock in /usr/local/lib/python3.11/dist-packages (from torch<2.3.0,>=2.2.0->facenet-pytorch) (3.19.1)\r\n",
+      "Requirement already satisfied: typing-extensions>=4.8.0 in /usr/local/lib/python3.11/dist-packages (from torch<2.3.0,>=2.2.0->facenet-pytorch) (4.15.0)\r\n",
+      "Requirement already satisfied: sympy in /usr/local/lib/python3.11/dist-packages (from torch<2.3.0,>=2.2.0->facenet-pytorch) (1.13.1)\r\n",
+      "Requirement already satisfied: networkx in /usr/local/lib/python3.11/dist-packages (from torch<2.3.0,>=2.2.0->facenet-pytorch) (3.5)\r\n",
+      "Requirement already satisfied: jinja2 in /usr/local/lib/python3.11/dist-packages (from torch<2.3.0,>=2.2.0->facenet-pytorch) (3.1.6)\r\n",
+      "Requirement already satisfied: fsspec in /usr/local/lib/python3.11/dist-packages (from torch<2.3.0,>=2.2.0->facenet-pytorch) (2025.9.0)\r\n",
+      "Collecting nvidia-cuda-nvrtc-cu12==12.1.105 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_cuda_nvrtc_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)\r\n",
+      "Collecting nvidia-cuda-runtime-cu12==12.1.105 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_cuda_runtime_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)\r\n",
+      "Collecting nvidia-cuda-cupti-cu12==12.1.105 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_cuda_cupti_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)\r\n",
+      "Collecting nvidia-cudnn-cu12==8.9.2.26 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_cudnn_cu12-8.9.2.26-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)\r\n",
+      "Collecting nvidia-cublas-cu12==12.1.3.1 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)\r\n",
+      "Collecting nvidia-cufft-cu12==11.0.2.54 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)\r\n",
+      "Collecting nvidia-curand-cu12==10.3.2.106 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_curand_cu12-10.3.2.106-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)\r\n",
+      "Collecting nvidia-cusolver-cu12==11.4.5.107 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)\r\n",
+      "Collecting nvidia-cusparse-cu12==12.1.0.106 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)\r\n",
+      "Collecting nvidia-nccl-cu12==2.19.3 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_nccl_cu12-2.19.3-py3-none-manylinux1_x86_64.whl.metadata (1.8 kB)\r\n",
+      "Collecting nvidia-nvtx-cu12==12.1.105 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading nvidia_nvtx_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.7 kB)\r\n",
+      "Collecting triton==2.2.0 (from torch<2.3.0,>=2.2.0->facenet-pytorch)\r\n",
+      "  Downloading triton-2.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.4 kB)\r\n",
+      "Requirement already satisfied: nvidia-nvjitlink-cu12 in /usr/local/lib/python3.11/dist-packages (from nvidia-cusolver-cu12==11.4.5.107->torch<2.3.0,>=2.2.0->facenet-pytorch) (12.5.82)\r\n",
+      "Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.11/dist-packages (from jinja2->torch<2.3.0,>=2.2.0->facenet-pytorch) (3.0.2)\r\n",
+      "Requirement already satisfied: intel-openmp<2026,>=2024 in /usr/local/lib/python3.11/dist-packages (from mkl->numpy<2.0.0,>=1.24.0->facenet-pytorch) (2024.2.0)\r\n",
+      "Requirement already satisfied: tbb==2022.* in /usr/local/lib/python3.11/dist-packages (from mkl->numpy<2.0.0,>=1.24.0->facenet-pytorch) (2022.2.0)\r\n",
+      "Requirement already satisfied: tcmlib==1.* in /usr/local/lib/python3.11/dist-packages (from tbb==2022.*->mkl->numpy<2.0.0,>=1.24.0->facenet-pytorch) (1.4.0)\r\n",
+      "Requirement already satisfied: intel-cmplr-lib-rt in /usr/local/lib/python3.11/dist-packages (from mkl_umath->numpy<2.0.0,>=1.24.0->facenet-pytorch) (2024.2.0)\r\n",
+      "Requirement already satisfied: mpmath<1.4,>=1.1.0 in /usr/local/lib/python3.11/dist-packages (from sympy->torch<2.3.0,>=2.2.0->facenet-pytorch) (1.3.0)\r\n",
+      "Requirement already satisfied: intel-cmplr-lib-ur==2024.2.0 in /usr/local/lib/python3.11/dist-packages (from intel-openmp<2026,>=2024->mkl->numpy<2.0.0,>=1.24.0->facenet-pytorch) (2024.2.0)\r\n",
+      "Downloading facenet_pytorch-2.6.0-py3-none-any.whl (1.9 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.9/1.9 MB\u001b[0m \u001b[31m43.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading pillow-10.2.0-cp311-cp311-manylinux_2_28_x86_64.whl (4.5 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m4.5/4.5 MB\u001b[0m \u001b[31m93.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading torch-2.2.2-cp311-cp311-manylinux1_x86_64.whl (755.6 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m755.6/755.6 MB\u001b[0m \u001b[31m2.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl (410.6 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m410.6/410.6 MB\u001b[0m \u001b[31m2.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_cuda_cupti_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (14.1 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m14.1/14.1 MB\u001b[0m \u001b[31m94.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_cuda_nvrtc_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (23.7 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m23.7/23.7 MB\u001b[0m \u001b[31m73.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_cuda_runtime_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (823 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m823.6/823.6 kB\u001b[0m \u001b[31m50.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_cudnn_cu12-8.9.2.26-py3-none-manylinux1_x86_64.whl (731.7 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m731.7/731.7 MB\u001b[0m \u001b[31m2.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl (121.6 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m121.6/121.6 MB\u001b[0m \u001b[31m8.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_curand_cu12-10.3.2.106-py3-none-manylinux1_x86_64.whl (56.5 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m56.5/56.5 MB\u001b[0m \u001b[31m33.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl (124.2 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m124.2/124.2 MB\u001b[0m \u001b[31m15.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl (196.0 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m196.0/196.0 MB\u001b[0m \u001b[31m3.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_nccl_cu12-2.19.3-py3-none-manylinux1_x86_64.whl (166.0 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m166.0/166.0 MB\u001b[0m \u001b[31m4.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading nvidia_nvtx_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (99 kB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m99.1/99.1 kB\u001b[0m \u001b[31m8.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading triton-2.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (167.9 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m167.9/167.9 MB\u001b[0m \u001b[31m11.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hDownloading torchvision-0.17.2-cp311-cp311-manylinux1_x86_64.whl (6.9 MB)\r\n",
+      "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.9/6.9 MB\u001b[0m \u001b[31m96.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\r\n",
+      "\u001b[?25hInstalling collected packages: triton, Pillow, nvidia-nvtx-cu12, nvidia-nccl-cu12, nvidia-cusparse-cu12, nvidia-curand-cu12, nvidia-cufft-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, nvidia-cusolver-cu12, nvidia-cudnn-cu12, torch, torchvision, facenet-pytorch\r\n",
+      "  Attempting uninstall: triton\r\n",
+      "    Found existing installation: triton 3.2.0\r\n",
+      "    Uninstalling triton-3.2.0:\r\n",
+      "      Successfully uninstalled triton-3.2.0\r\n",
+      "  Attempting uninstall: Pillow\r\n",
+      "    Found existing installation: pillow 11.3.0\r\n",
+      "    Uninstalling pillow-11.3.0:\r\n",
+      "      Successfully uninstalled pillow-11.3.0\r\n",
+      "  Attempting uninstall: nvidia-nvtx-cu12\r\n",
+      "    Found existing installation: nvidia-nvtx-cu12 12.4.127\r\n",
+      "    Uninstalling nvidia-nvtx-cu12-12.4.127:\r\n",
+      "      Successfully uninstalled nvidia-nvtx-cu12-12.4.127\r\n",
+      "  Attempting uninstall: nvidia-nccl-cu12\r\n",
+      "    Found existing installation: nvidia-nccl-cu12 2.21.5\r\n",
+      "    Uninstalling nvidia-nccl-cu12-2.21.5:\r\n",
+      "      Successfully uninstalled nvidia-nccl-cu12-2.21.5\r\n",
+      "  Attempting uninstall: nvidia-cusparse-cu12\r\n",
+      "    Found existing installation: nvidia-cusparse-cu12 12.5.1.3\r\n",
+      "    Uninstalling nvidia-cusparse-cu12-12.5.1.3:\r\n",
+      "      Successfully uninstalled nvidia-cusparse-cu12-12.5.1.3\r\n",
+      "  Attempting uninstall: nvidia-curand-cu12\r\n",
+      "    Found existing installation: nvidia-curand-cu12 10.3.6.82\r\n",
+      "    Uninstalling nvidia-curand-cu12-10.3.6.82:\r\n",
+      "      Successfully uninstalled nvidia-curand-cu12-10.3.6.82\r\n",
+      "  Attempting uninstall: nvidia-cufft-cu12\r\n",
+      "    Found existing installation: nvidia-cufft-cu12 11.2.3.61\r\n",
+      "    Uninstalling nvidia-cufft-cu12-11.2.3.61:\r\n",
+      "      Successfully uninstalled nvidia-cufft-cu12-11.2.3.61\r\n",
+      "  Attempting uninstall: nvidia-cuda-runtime-cu12\r\n",
+      "    Found existing installation: nvidia-cuda-runtime-cu12 12.5.82\r\n",
+      "    Uninstalling nvidia-cuda-runtime-cu12-12.5.82:\r\n",
+      "      Successfully uninstalled nvidia-cuda-runtime-cu12-12.5.82\r\n",
+      "  Attempting uninstall: nvidia-cuda-nvrtc-cu12\r\n",
+      "    Found existing installation: nvidia-cuda-nvrtc-cu12 12.5.82\r\n",
+      "    Uninstalling nvidia-cuda-nvrtc-cu12-12.5.82:\r\n",
+      "      Successfully uninstalled nvidia-cuda-nvrtc-cu12-12.5.82\r\n",
+      "  Attempting uninstall: nvidia-cuda-cupti-cu12\r\n",
+      "    Found existing installation: nvidia-cuda-cupti-cu12 12.5.82\r\n",
+      "    Uninstalling nvidia-cuda-cupti-cu12-12.5.82:\r\n",
+      "      Successfully uninstalled nvidia-cuda-cupti-cu12-12.5.82\r\n",
+      "  Attempting uninstall: nvidia-cublas-cu12\r\n",
+      "    Found existing installation: nvidia-cublas-cu12 12.5.3.2\r\n",
+      "    Uninstalling nvidia-cublas-cu12-12.5.3.2:\r\n",
+      "      Successfully uninstalled nvidia-cublas-cu12-12.5.3.2\r\n",
+      "  Attempting uninstall: nvidia-cusolver-cu12\r\n",
+      "    Found existing installation: nvidia-cusolver-cu12 11.6.3.83\r\n",
+      "    Uninstalling nvidia-cusolver-cu12-11.6.3.83:\r\n",
+      "      Successfully uninstalled nvidia-cusolver-cu12-11.6.3.83\r\n",
+      "  Attempting uninstall: nvidia-cudnn-cu12\r\n",
+      "    Found existing installation: nvidia-cudnn-cu12 9.3.0.75\r\n",
+      "    Uninstalling nvidia-cudnn-cu12-9.3.0.75:\r\n",
+      "      Successfully uninstalled nvidia-cudnn-cu12-9.3.0.75\r\n",
+      "  Attempting uninstall: torch\r\n",
+      "    Found existing installation: torch 2.6.0+cu124\r\n",
+      "    Uninstalling torch-2.6.0+cu124:\r\n",
+      "      Successfully uninstalled torch-2.6.0+cu124\r\n",
+      "  Attempting uninstall: torchvision\r\n",
+      "    Found existing installation: torchvision 0.21.0+cu124\r\n",
+      "    Uninstalling torchvision-0.21.0+cu124:\r\n",
+      "      Successfully uninstalled torchvision-0.21.0+cu124\r\n",
+      "\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\r\n",
+      "bigframes 2.12.0 requires google-cloud-bigquery-storage<3.0.0,>=2.30.0, which is not installed.\r\n",
+      "dopamine-rl 4.1.2 requires gymnasium>=1.0.0, but you have gymnasium 0.29.0 which is incompatible.\r\n",
+      "bigframes 2.12.0 requires google-cloud-bigquery[bqstorage,pandas]>=3.31.0, but you have google-cloud-bigquery 3.25.0 which is incompatible.\r\n",
+      "bigframes 2.12.0 requires rich<14,>=12.4.4, but you have rich 14.1.0 which is incompatible.\r\n",
+      "libcugraph-cu12 25.6.0 requires libraft-cu12==25.6.*, but you have libraft-cu12 25.2.0 which is incompatible.\r\n",
+      "torchaudio 2.6.0+cu124 requires torch==2.6.0, but you have torch 2.2.2 which is incompatible.\r\n",
+      "gradio 5.38.1 requires pydantic<2.12,>=2.0, but you have pydantic 2.12.0a1 which is incompatible.\r\n",
+      "plotnine 0.14.5 requires matplotlib>=3.8.0, but you have matplotlib 3.7.2 which is incompatible.\r\n",
+      "pylibcugraph-cu12 25.6.0 requires pylibraft-cu12==25.6.*, but you have pylibraft-cu12 25.2.0 which is incompatible.\r\n",
+      "pylibcugraph-cu12 25.6.0 requires rmm-cu12==25.6.*, but you have rmm-cu12 25.2.0 which is incompatible.\r\n",
+      "mlxtend 0.23.4 requires scikit-learn>=1.3.1, but you have scikit-learn 1.2.2 which is incompatible.\u001b[0m\u001b[31m\r\n",
+      "\u001b[0mSuccessfully installed Pillow-10.2.0 facenet-pytorch-2.6.0 nvidia-cublas-cu12-12.1.3.1 nvidia-cuda-cupti-cu12-12.1.105 nvidia-cuda-nvrtc-cu12-12.1.105 nvidia-cuda-runtime-cu12-12.1.105 nvidia-cudnn-cu12-8.9.2.26 nvidia-cufft-cu12-11.0.2.54 nvidia-curand-cu12-10.3.2.106 nvidia-cusolver-cu12-11.4.5.107 nvidia-cusparse-cu12-12.1.0.106 nvidia-nccl-cu12-2.19.3 nvidia-nvtx-cu12-12.1.105 torch-2.2.2 torchvision-0.17.2 triton-2.2.0\r\n"
+     ]
+    }
+   ],
+   "source": [
+    "!pip install facenet-pytorch"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "782741be",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-04T11:45:26.633254Z",
+     "iopub.status.busy": "2026-03-04T11:45:26.632743Z",
+     "iopub.status.idle": "2026-03-04T13:21:58.061519Z",
+     "shell.execute_reply": "2026-03-04T13:21:58.059665Z"
+    },
+    "papermill": {
+     "duration": 5791.463699,
+     "end_time": "2026-03-04T13:21:58.062886",
+     "exception": false,
+     "start_time": "2026-03-04T11:45:26.599187",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "train/real: 100%|██████████| 50000/50000 [35:05<00:00, 23.75it/s]\n",
+      "train/fake: 100%|██████████| 50000/50000 [34:19<00:00, 24.28it/s]\n",
+      "valid/real: 100%|██████████| 10000/10000 [06:40<00:00, 24.95it/s]\n",
+      "valid/fake: 100%|██████████| 10000/10000 [06:42<00:00, 24.84it/s]\n",
+      "test/real: 100%|██████████| 10000/10000 [07:03<00:00, 23.63it/s]\n",
+      "test/fake: 100%|██████████| 10000/10000 [06:37<00:00, 25.17it/s]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from facenet_pytorch import MTCNN\n",
+    "from PIL import Image\n",
+    "import os\n",
+    "from tqdm import tqdm\n",
+    "import torch\n",
+    "\n",
+    "device = 'cuda' if torch.cuda.is_available() else 'cpu'\n",
+    "\n",
+    "mtcnn = MTCNN(\n",
+    "    image_size=224,\n",
+    "    margin=40,          # prevents chin/forehead cuts\n",
+    "    device=device,\n",
+    "    post_process=False\n",
+    ")\n",
+    "\n",
+    "SRC_ROOT = \"/kaggle/input/140k-real-and-fake-faces/real_vs_fake/real-vs-fake\"\n",
+    "DST_ROOT = \"/kaggle/working/140k_aligned_faces\"\n",
+    "\n",
+    "splits = [\"train\", \"valid\", \"test\"]\n",
+    "classes = [\"real\", \"fake\"]\n",
+    "\n",
+    "for split in splits:\n",
+    "    for cls in classes:\n",
+    "        src_dir = os.path.join(SRC_ROOT, split, cls)\n",
+    "        dst_dir = os.path.join(DST_ROOT, split, cls)\n",
+    "        os.makedirs(dst_dir, exist_ok=True)\n",
+    "\n",
+    "        files = os.listdir(src_dir)\n",
+    "\n",
+    "        for f in tqdm(files, desc=f\"{split}/{cls}\"):\n",
+    "\n",
+    "            src_path = os.path.join(src_dir, f)\n",
+    "            dst_path = os.path.join(dst_dir, f)\n",
+    "\n",
+    "            try:\n",
+    "                img = Image.open(src_path).convert(\"RGB\")\n",
+    "\n",
+    "                face = mtcnn(img)\n",
+    "\n",
+    "                if face is None:\n",
+    "                    # fallback: just resize original\n",
+    "                    img = img.resize((224,224))\n",
+    "                    img.save(dst_path)\n",
+    "                else:\n",
+    "                    face = face.permute(1,2,0).byte().numpy()\n",
+    "                    Image.fromarray(face).save(dst_path)\n",
+    "\n",
+    "            except:\n",
+    "                continue"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "faf1285d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-03-04T13:22:01.999287Z",
+     "iopub.status.busy": "2026-03-04T13:22:01.999025Z",
+     "iopub.status.idle": "2026-03-04T13:22:02.005352Z",
+     "shell.execute_reply": "2026-03-04T13:22:02.004804Z"
+    },
+    "papermill": {
+     "duration": 1.917469,
+     "end_time": "2026-03-04T13:22:02.006350",
+     "exception": false,
+     "start_time": "2026-03-04T13:22:00.088881",
      "status": "completed"
     },
     "tags": []
@@ -86,7 +369,7 @@
     "        img = self.loader(path).convert(\"RGB\")\n",
     "\n",
     "        # ---- shared geometry ----\n",
-    "        img = TF.resize(img, (224, 224))\n",
+    "    \n",
     "        if random.random() < self.p_flip:\n",
     "            img = TF.hflip(img)\n",
     "\n",
@@ -113,20 +396,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
-   "id": "5e752020",
+   "execution_count": 5,
+   "id": "1778c586",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:41.029364Z",
-     "iopub.status.busy": "2026-03-03T16:32:41.028943Z",
-     "iopub.status.idle": "2026-03-03T16:32:41.033005Z",
-     "shell.execute_reply": "2026-03-03T16:32:41.032434Z"
+     "iopub.execute_input": "2026-03-04T13:22:06.252339Z",
+     "iopub.status.busy": "2026-03-04T13:22:06.252061Z",
+     "iopub.status.idle": "2026-03-04T13:22:06.256922Z",
+     "shell.execute_reply": "2026-03-04T13:22:06.256214Z"
     },
     "papermill": {
-     "duration": 0.007844,
-     "end_time": "2026-03-03T16:32:41.034053",
+     "duration": 2.149239,
+     "end_time": "2026-03-04T13:22:06.258068",
      "exception": false,
-     "start_time": "2026-03-03T16:32:41.026209",
+     "start_time": "2026-03-04T13:22:04.108829",
      "status": "completed"
     },
     "tags": []
@@ -146,20 +429,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
-   "id": "d63bfe81",
+   "execution_count": 6,
+   "id": "eb544015",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:41.038964Z",
-     "iopub.status.busy": "2026-03-03T16:32:41.038726Z",
-     "iopub.status.idle": "2026-03-03T16:32:41.043266Z",
-     "shell.execute_reply": "2026-03-03T16:32:41.042711Z"
+     "iopub.execute_input": "2026-03-04T13:22:10.254220Z",
+     "iopub.status.busy": "2026-03-04T13:22:10.253435Z",
+     "iopub.status.idle": "2026-03-04T13:22:10.258907Z",
+     "shell.execute_reply": "2026-03-04T13:22:10.258296Z"
     },
     "papermill": {
-     "duration": 0.008077,
-     "end_time": "2026-03-03T16:32:41.044205",
+     "duration": 2.114916,
+     "end_time": "2026-03-04T13:22:10.260031",
      "exception": false,
-     "start_time": "2026-03-03T16:32:41.036128",
+     "start_time": "2026-03-04T13:22:08.145115",
      "status": "completed"
     },
     "tags": []
@@ -188,52 +471,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
-   "id": "a96de1b4",
+   "execution_count": 7,
+   "id": "3b975947",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:41.049151Z",
-     "iopub.status.busy": "2026-03-03T16:32:41.048773Z",
-     "iopub.status.idle": "2026-03-03T16:32:41.052115Z",
-     "shell.execute_reply": "2026-03-03T16:32:41.051574Z"
+     "iopub.execute_input": "2026-03-04T13:22:14.156867Z",
+     "iopub.status.busy": "2026-03-04T13:22:14.156339Z",
+     "iopub.status.idle": "2026-03-04T13:22:14.163117Z",
+     "shell.execute_reply": "2026-03-04T13:22:14.162353Z"
     },
     "papermill": {
-     "duration": 0.006825,
-     "end_time": "2026-03-03T16:32:41.053091",
+     "duration": 1.898558,
+     "end_time": "2026-03-04T13:22:14.164324",
      "exception": false,
-     "start_time": "2026-03-03T16:32:41.046266",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [],
-   "source": [
-    "import os\n",
-    "\n",
-    "H_ROOT = \"/kaggle/input/140k-real-and-fake-faces/real_vs_fake/real-vs-fake\"\n",
-    "H_OUT  = \"/kaggle/working/140k_aligned224\"\n",
-    "\n",
-    "splits = [\"train\", \"valid\", \"test\"]   # your dataset uses \"valid\"\n",
-    "classes = [\"real\", \"fake\"]\n",
-    "\n"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 6,
-   "id": "394e432a",
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:41.058276Z",
-     "iopub.status.busy": "2026-03-03T16:32:41.057671Z",
-     "iopub.status.idle": "2026-03-03T16:32:41.064763Z",
-     "shell.execute_reply": "2026-03-03T16:32:41.064094Z"
-    },
-    "papermill": {
-     "duration": 0.010728,
-     "end_time": "2026-03-03T16:32:41.065829",
-     "exception": false,
-     "start_time": "2026-03-03T16:32:41.055101",
+     "start_time": "2026-03-04T13:22:12.265766",
      "status": "completed"
     },
     "tags": []
@@ -282,20 +533,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
-   "id": "0c438b84",
+   "execution_count": 8,
+   "id": "52999e85",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:41.070966Z",
-     "iopub.status.busy": "2026-03-03T16:32:41.070568Z",
-     "iopub.status.idle": "2026-03-03T16:32:41.080342Z",
-     "shell.execute_reply": "2026-03-03T16:32:41.079814Z"
+     "iopub.execute_input": "2026-03-04T13:22:18.306510Z",
+     "iopub.status.busy": "2026-03-04T13:22:18.305969Z",
+     "iopub.status.idle": "2026-03-04T13:22:18.316744Z",
+     "shell.execute_reply": "2026-03-04T13:22:18.316217Z"
     },
     "papermill": {
-     "duration": 0.013448,
-     "end_time": "2026-03-03T16:32:41.081299",
+     "duration": 2.022638,
+     "end_time": "2026-03-04T13:22:18.317831",
      "exception": false,
-     "start_time": "2026-03-03T16:32:41.067851",
+     "start_time": "2026-03-04T13:22:16.295193",
      "status": "completed"
     },
     "tags": []
@@ -399,20 +650,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
-   "id": "3af465f0",
+   "execution_count": 9,
+   "id": "3ae4bc3a",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:41.086326Z",
-     "iopub.status.busy": "2026-03-03T16:32:41.086118Z",
-     "iopub.status.idle": "2026-03-03T16:32:41.098758Z",
-     "shell.execute_reply": "2026-03-03T16:32:41.098199Z"
+     "iopub.execute_input": "2026-03-04T13:22:22.289838Z",
+     "iopub.status.busy": "2026-03-04T13:22:22.289437Z",
+     "iopub.status.idle": "2026-03-04T13:22:22.302641Z",
+     "shell.execute_reply": "2026-03-04T13:22:22.302073Z"
     },
     "papermill": {
-     "duration": 0.016372,
-     "end_time": "2026-03-03T16:32:41.099754",
+     "duration": 2.119998,
+     "end_time": "2026-03-04T13:22:22.303819",
      "exception": false,
-     "start_time": "2026-03-03T16:32:41.083382",
+     "start_time": "2026-03-04T13:22:20.183821",
      "status": "completed"
     },
     "tags": []
@@ -427,6 +678,7 @@
     "\n",
     "    # ---- Dataset ----\n",
     "    jpeg_aug = RandomJPEG(quality_min=30, quality_max=100, p=0.7)\n",
+    "    \n",
     "\n",
     "    rgb_color_aug = transforms.Compose([\n",
     "        transforms.ColorJitter(0.1, 0.1, 0.05, 0.02),\n",
@@ -436,15 +688,15 @@
     "                                    [0.229, 0.224, 0.225])\n",
     "\n",
     "    trainset = DualViewImageFolder(\n",
-    "        \"/kaggle/input/140k-real-and-fake-faces/real_vs_fake/real-vs-fake/train\",\n",
+    "        \"/kaggle/working/140k_aligned_faces/train\",\n",
     "        p_flip=0.5, jpeg_aug=jpeg_aug, rgb_color_aug=rgb_color_aug, rgb_norm=rgb_norm\n",
     "    )\n",
     "    valset = DualViewImageFolder(\n",
-    "        \"/kaggle/input/140k-real-and-fake-faces/real_vs_fake/real-vs-fake/valid\",\n",
+    "        \"/kaggle/working/140k_aligned_faces/valid\",\n",
     "        p_flip=0.0, jpeg_aug=None, rgb_color_aug=None, rgb_norm=rgb_norm\n",
     "    )\n",
     "    testset = DualViewImageFolder(\n",
-    "        \"/kaggle/input/140k-real-and-fake-faces/real_vs_fake/real-vs-fake/test\",\n",
+    "        \"/kaggle/working/140k_aligned_faces/test\",\n",
     "        p_flip=0.0, jpeg_aug=None, rgb_color_aug=None, rgb_norm=rgb_norm\n",
     "    )\n",
     "\n",
@@ -477,7 +729,7 @@
     "        weight_decay=1e-4\n",
     "    )\n",
     "\n",
-    "    criterion = nn.CrossEntropyLoss()\n",
+    "    criterion = nn.CrossEntropyLoss(label_smoothing=0.05)\n",
     "    epochs = 10\n",
     "    best_auc = 0.0\n",
     "\n",
@@ -505,6 +757,7 @@
     "                loss = criterion(logits, lbls)\n",
     "\n",
     "            scaler.scale(loss).backward()\n",
+    "            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)\n",
     "            scaler.step(opt)\n",
     "            scaler.update()\n",
     "\n",
@@ -548,20 +801,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
-   "id": "e645f66e",
+   "execution_count": 10,
+   "id": "e75cae2d",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:41.104494Z",
-     "iopub.status.busy": "2026-03-03T16:32:41.104290Z",
-     "iopub.status.idle": "2026-03-03T16:32:41.109526Z",
-     "shell.execute_reply": "2026-03-03T16:32:41.109011Z"
+     "iopub.execute_input": "2026-03-04T13:22:26.246284Z",
+     "iopub.status.busy": "2026-03-04T13:22:26.245685Z",
+     "iopub.status.idle": "2026-03-04T13:22:26.251402Z",
+     "shell.execute_reply": "2026-03-04T13:22:26.250870Z"
     },
     "papermill": {
-     "duration": 0.008702,
-     "end_time": "2026-03-03T16:32:41.110502",
+     "duration": 1.94882,
+     "end_time": "2026-03-04T13:22:26.252424",
      "exception": false,
-     "start_time": "2026-03-03T16:32:41.101800",
+     "start_time": "2026-03-04T13:22:24.303604",
      "status": "completed"
     },
     "tags": []
@@ -590,237 +843,8 @@
     "\n",
     "    auc, f1, eer, acc = calc_metrics(np.array(y_true), np.array(y_prob))\n",
     "    print(f\"{tag} → AUROC={auc:.3f} | F1={f1:.3f} | EER={eer:.3f} | ACC={acc:.3f}\")\n",
-    "    return auc, f1, eer, acc"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 10,
-   "id": "55ef692c",
-   "metadata": {
-    "execution": {
-     "iopub.execute_input": "2026-03-03T16:32:41.115422Z",
-     "iopub.status.busy": "2026-03-03T16:32:41.115093Z",
-     "iopub.status.idle": "2026-03-03T22:25:53.388562Z",
-     "shell.execute_reply": "2026-03-03T22:25:53.387656Z"
-    },
-    "papermill": {
-     "duration": 21192.277888,
-     "end_time": "2026-03-03T22:25:53.390438",
-     "exception": false,
-     "start_time": "2026-03-03T16:32:41.112550",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Downloading: \"https://download.pytorch.org/models/resnet50-0676ba61.pth\" to /root/.cache/torch/hub/checkpoints/resnet50-0676ba61.pth\n",
-      "100%|██████████| 97.8M/97.8M [00:00<00:00, 237MB/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "class_to_idx: {'fake': 0, 'real': 1}\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 1/10: 100%|███████████████████████████████████████████████| 6250/6250 [43:10<00:00,  2.41it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 1: loss=0.1713 | AUROC=1.000 | F1=0.989 | EER=0.008 | ACC=0.989\n",
-      "LRs: [9.755282581475769e-06, 9.755282581475769e-05]\n",
-      "New best AUC 1.000 (ACC=0.989)\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 2/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:29<00:00,  3.21it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 2: loss=0.0590 | AUROC=1.000 | F1=0.996 | EER=0.004 | ACC=0.996\n",
-      "LRs: [9.045084971874738e-06, 9.045084971874737e-05]\n",
-      "New best AUC 1.000 (ACC=0.996)\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 3/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:24<00:00,  3.21it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 3: loss=0.0321 | AUROC=1.000 | F1=0.995 | EER=0.004 | ACC=0.995\n",
-      "LRs: [7.938926261462366e-06, 7.938926261462366e-05]\n",
-      "New best AUC 1.000 (ACC=0.995)\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 4/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:12<00:00,  3.23it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 4: loss=0.0217 | AUROC=1.000 | F1=0.998 | EER=0.002 | ACC=0.998\n",
-      "LRs: [6.545084971874738e-06, 6.545084971874737e-05]\n",
-      "New best AUC 1.000 (ACC=0.998)\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 5/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:11<00:00,  3.24it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 5: loss=0.0153 | AUROC=1.000 | F1=0.998 | EER=0.002 | ACC=0.998\n",
-      "LRs: [5e-06, 4.9999999999999996e-05]\n",
-      "New best AUC 1.000 (ACC=0.998)\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 6/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:15<00:00,  3.23it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 6: loss=0.0108 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
-      "LRs: [3.4549150281252635e-06, 3.454915028125263e-05]\n",
-      "New best AUC 1.000 (ACC=0.999)\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 7/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:35<00:00,  3.20it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 7: loss=0.0072 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
-      "LRs: [2.061073738537635e-06, 2.0610737385376345e-05]\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 8/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:34<00:00,  3.20it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 8: loss=0.0057 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
-      "LRs: [9.549150281252633e-07, 9.549150281252631e-06]\n",
-      "New best AUC 1.000 (ACC=0.999)\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 9/10: 100%|███████████████████████████████████████████████| 6250/6250 [32:36<00:00,  3.19it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 9: loss=0.0037 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
-      "LRs: [2.4471741852423233e-07, 2.447174185242323e-06]\n",
-      "New best AUC 1.000 (ACC=0.999)\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "Epoch 10/10: 100%|██████████████████████████████████████████████| 6250/6250 [32:15<00:00,  3.23it/s]\n"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Epoch 10: loss=0.0026 | AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n",
-      "LRs: [0.0, 0.0]\n",
-      "New best AUC 1.000 (ACC=0.999)\n",
-      "\n",
-      "Training complete!\n",
-      "Best model achieved: AUROC=1.000\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "140k TEST: 100%|████████████████████████████████████████████████| 1250/1250 [01:54<00:00, 10.93it/s]"
-     ]
-    },
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "140k TEST → AUROC=1.000 | F1=0.999 | EER=0.001 | ACC=0.999\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "\n"
-     ]
-    }
-   ],
-   "source": [
-    "if __name__ == \"__main__\":\n",
-    "    model, testloader, class_to_idx = train_stage3()\n",
-    "\n",
-    "    # Load best validation model before testing\n",
-    "    model.load_state_dict(torch.load(\"/kaggle/working/best_auc_stage3.pth\"))\n",
-    "\n",
-    "    evaluate(model, testloader, class_to_idx, tag=\"140k TEST\")"
+    "    return auc, f1, eer, acc\n",
+    "\n"
    ]
   }
  ],
@@ -832,12 +856,6 @@
      "databundleVersionId": 967497,
      "datasetId": 501529,
      "sourceId": 939937,
-     "sourceType": "datasetVersion"
-    },
-    {
-     "databundleVersionId": 15664996,
-     "datasetId": 9469735,
-     "sourceId": 14809198,
      "sourceType": "datasetVersion"
     }
    ],
@@ -866,14 +884,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 21216.456896,
-   "end_time": "2026-03-03T22:25:58.779810",
+   "duration": 5979.962953,
+   "end_time": "2026-03-04T13:22:29.826150",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2026-03-03T16:32:22.322914",
+   "start_time": "2026-03-04T11:42:49.863197",
    "version": "2.6.0"
   }
  },
