@@ -92,4 +92,59 @@ Extended model to:
 - Pretraining on large-scale dataset (140k images)
 - Fine-tuning on FaceForensics++
 - Careful FFT placement (raw vs normalized input)
-- Multi-objective loss:
+
+
+---
+
+##  Evaluation
+
+We evaluate:
+- Image-level metrics (Accuracy, AUROC, F1)
+- Cross-dataset generalization
+- Region-level interpretability via:
+  - Fake region overlays
+  - Coverage % of manipulated areas
+
+---
+ 
+##  Key Contributions
+
+- ✅ Hybrid **RGB + FFT + Transformer architecture**
+- ✅ **Cross-modal attention fusion**
+- ✅ **Region-level deepfake localization**
+- ✅ Weakly-supervised segmentation pipeline
+- ✅ Improved interpretability beyond Grad-CAM
+
+---
+
+##  Important Insights
+
+- FFT should be applied **before normalization** for meaningful frequency signals :contentReference[oaicite:1]{index=1}  
+- Frequency signals are **global**, not region-based → segmentation must stay in RGB space :contentReference[oaicite:2]{index=2}  
+- Grad-CAM alone is insufficient → model must be **trained to localize**  
+
+---
+
+##  Future Work
+
+- Face-part tokenization instead of SLIC
+- Video-based detection (temporal modeling)
+- Stronger supervision for segmentation
+- Cross-generator generalization
+
+---
+
+##  Tech Stack
+
+- Python, PyTorch
+- OpenCV, NumPy
+- ResNet50, Vision Transformers
+- FFT-based feature extraction
+- Grad-CAM & attention visualization
+
+---
+
+##  Final Takeaway
+
+This project moves beyond “black-box classification” toward:
+> **Explainable, frequency-aware deepfake detection systems that can both detect and localize manipulation.**
