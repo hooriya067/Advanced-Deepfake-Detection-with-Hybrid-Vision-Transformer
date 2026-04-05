@@ -109,11 +109,11 @@ We evaluate:
  
 ##  Key Contributions
 
-- ✅ Hybrid **RGB + FFT + Transformer architecture**
-- ✅ **Cross-modal attention fusion**
-- ✅ **Region-level deepfake localization**
-- ✅ Weakly-supervised segmentation pipeline
-- ✅ Improved interpretability beyond Grad-CAM
+-  Hybrid **RGB + FFT + Transformer architecture**
+-  **Cross-modal attention fusion**
+-  **Region-level deepfake localization**
+-  Weakly-supervised segmentation pipeline
+-  Improved interpretability beyond Grad-CAM
 
 ---
 
