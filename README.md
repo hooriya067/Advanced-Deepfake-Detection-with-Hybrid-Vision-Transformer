@@ -30,6 +30,17 @@ All notebooks include saved outputs from the original training runs, so reviewer
 **The principal contribution is in `4_Final_Model/`.** The other folders document the experimental progression that led to it.
 
 ---
+## Checkpoints Provided
+
+Saved model checkpoints (`.pth`) for the main experiments are already included in the repository structure and tracked using **Git LFS**.
+
+To download them correctly, clone the repository with Git LFS enabled:
+
+```bash
+git lfs install
+git clone [Advanced-Deepfake-Detection-with-Hybrid-Vision-Transformer]
+git lfs pull
+
 ## Architecture Overview
 
 ![Final Architecture](Final-Model-overview.png)
@@ -140,17 +151,33 @@ Link: https://www.kaggle.com/datasets/xhlulu/140k-real-and-fake-faces
 4. Update the `DATA_PATH` variable at the top of each notebook to point to your local dataset folders.
 5. Open in Jupyter or VS Code and run.
 
----
+### 5.5 — Using Provided Checkpoints Instead of Retraining
 
-### 5.5 — Reproducing the Headline Results
+Most notebooks support direct evaluation using the provided saved checkpoints, so reviewers do not need to rerun full training unless they want to.
+
+- **Stage 1 and Stage 2 notebooks:**  
+  Each notebook includes an **evaluation-only cell at the end**. To use a provided checkpoint:
+  1. upload or make the `.pth` checkpoint available in Kaggle,
+  2. update the checkpoint path in the evaluation-only cell,
+  3. comment out or skip the training cell,
+  4. run only the evaluation-only cell.
+
+- **Stage 3 and Final Model notebooks (pretraining and fine-tuning):**  
+  These notebooks include a `RUN_TRAINING` flag in the final execution cell. To evaluate without retraining:
+  1. set `RUN_TRAINING = False`,
+  2. provide the correct checkpoint path,
+  3. run the notebook normally from that point onward.
+
+In both cases, the relevant dataset must still be available, since checkpoints alone are not sufficient for evaluation.
+### 5.6 — Reproducing the Headline Results
 
 To reproduce the final reported metrics (AUROC 0.998 on 140K, 0.920 on FF++ c23, 0.709 on FF++ c40), run in this order:
 
 1. `7_Supporting/pretrain/face_alignment.ipynb` — aligns 140K faces  
 2. `7_Supporting/pretrain/semantic_mask_generation.ipynb` — generates 20-region masks for 140K  
 3. `7_Supporting/finetune/face_alignment.ipynb` — aligns FF++ frames (requires FF++ access)  
-4. `4_Final_Model/final_model_pretrain.ipynb` — pretraining on 140K (~[X] hours on T4)  
-5. `4_Final_Model/final_model_finetune.ipynb` — fine-tuning on FF++ c23, includes cross-dataset evaluation on FF++ c40 at the end (~[X] hours on T4)
+4. `4_Final_Model/final_model_pretrain.ipynb` — pretraining on 140K (~[7-8] hours on T4)  
+5. `4_Final_Model/final_model_finetune.ipynb` — fine-tuning on FF++ c23, includes cross-dataset evaluation on FF++ c40 at the end (~[3-4] hours on T4)
 
 **Note on mask generation for fine-tuning:** Semantic masks for the FF++ dataset are generated inline within the fine-tune notebook itself, since the smaller dataset size allowed mask generation and training to fit within Kaggle's 12-hour session limit. For the larger 140K pretraining dataset, mask generation was separated into its own notebook (step 2 above) to stay within session limits.
 ---
