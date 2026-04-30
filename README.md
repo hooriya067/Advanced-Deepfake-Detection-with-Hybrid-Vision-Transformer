@@ -40,7 +40,7 @@ To download them correctly, clone the repository with Git LFS enabled:
 git lfs install
 git clone [Advanced-Deepfake-Detection-with-Hybrid-Vision-Transformer]
 git lfs pull
-
+```
 ## Architecture Overview
 
 ![Final Architecture](Final-Model-overview.png)
