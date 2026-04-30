@@ -2,7 +2,7 @@
 
 **Student:** Hooriya Masood (20613137)  
 **Supervisor:** Dr. Tissa Chandesa  
-**School of Computer Science, University of Nottingham Malaysia**  
+**School of Computer and Mathematical Sciences, University of Nottingham Malaysia**  
 **Submission:** 30th April 2026
 
 ---
